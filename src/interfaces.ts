@@ -1,4 +1,15 @@
 
+interface Auth {
+	loggedIn: boolean
+	email: string | null
+	token: string | null
+}
+
+interface AuthContext {
+    setAuth: (authState: Auth) => void
+    auth: Auth
+}
+
 // TODOs
 
 // Stats

@@ -198,3 +198,159 @@ body {
     max-width: 40%;
     margin-bottom: 0.5rem;
 }
+
+.icon {
+  font-size: 25px;
+  color: #fff;
+  font-weight: bold;
+  z-index: 3;
+}
+
+.text-large {
+  font-size: 25px;
+}
+
+.folder-text {
+  font-size: 30px;
+  margin-bottom: -5px;
+  overflow: hidden;
+}
+
+.auth-form {
+  width: 50%;
+}
+
+.pass-form {
+  margin-bottom: 1rem;
+  width: 70%;
+}
+
+.link:hover {
+  cursor:pointer;
+  text-decoration:underline;
+}
+
+.formcard {
+  
+  background: linear-gradient(
+    to right bottom,
+    rgba(110, 110, 110, 0.1),
+    rgba(255, 255, 255, 0.06)
+  );
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background-clip: padding-box;
+  border-radius: 10px !important;
+  z-index: 2;
+  backdrop-filter: blur(20px);
+  padding-top: 40px;
+  padding-bottom: 40px;
+  padding-left: 80px;
+  padding-right: 80px;
+}
+
+.input {
+  font-weight: 400;
+  outline: none !important;
+  border-radius: 8px !important;
+  height: 100%;
+  width: 100%;
+  padding-left: 20px;
+  padding-right: 10px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+
+  
+  background: linear-gradient(
+    to right bottom,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.06)
+  );
+  border-top: 2px solid rgba(0, 0, 0, 0.5);
+  border-left: 2px solid rgba(0, 0, 0, 0.5);
+  border-right: 2px solid rgba(0, 0, 0, 0.5);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.5);
+  background-clip: padding-box;
+  border-radius: 10px !important;
+  z-index: 4;
+  backdrop-filter: blur(40px);
+}
+
+.account-input {
+  font-weight: 400;
+  outline: none !important;
+  height: 100%;
+  width: 100%;
+  padding: 6px;
+  
+  background: linear-gradient(
+    to right bottom,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.06)
+  );
+  border-top: 2px solid rgba(255, 255, 255, 0.5);
+  border-left: 2px solid rgba(255, 255, 255, 0.5);
+  border-right: 2px solid rgba(255, 255, 255, 0.5);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+  background-clip: padding-box;
+  border-radius: 10px !important;
+  z-index: 4;
+  backdrop-filter: blur(40px);
+}
+
+.input:focus {
+  font-weight: 400;
+  outline: none !important;
+  border-radius: 8px !important;
+  box-shadow: none;
+  height: 100%;
+  width: 100%;
+
+  padding-left: 20px;
+  padding-right: 10px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+
+  background: white;
+  background: linear-gradient(
+    to right bottom,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.06)
+  );
+  border-top: 2px solid rgba(255, 255, 255, 0.5);
+  border-left: 2px solid rgba(255, 255, 255, 0.5);
+  border-right: 2px solid rgba(255, 255, 255, 0.5);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+  background-clip: padding-box;
+  border-radius: 10px !important;
+  z-index: 4;
+  backdrop-filter: blur(40px);
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+input::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder {
+
+  font-weight: 300 !important;
+}
+
+input:-moz-placeholder,
+textarea:-moz-placeholder {
+
+  font-weight: 300 !important;
+}
+
+.close-modal {
+    position: absolute;
+    display: inline;
+    left: 92%;
+    top: 12%;
+}

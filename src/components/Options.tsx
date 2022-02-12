@@ -1,65 +1,50 @@
 import React, { useEffect, useState } from "react";
 import { Button, ToggleButton, ToggleButtonGroup } from "react-bootstrap";
 
-const Options = (props: OptHandlers) => {
-    const { reset, started, change } = props
-    const [ mode, setMode ] = useState<Mode>('pvp')
-    const [ size, setSize ] = useState<BoardSize>('small')
-
-    const changeMode = (value: Mode) => {
-        setMode(value)
-    }
-
-    const changeSize = (value: BoardSize) => {
-        setSize(value)
-    }
-
-    useEffect(() => {
-        change({mode, size})
-    }, [mode, size])
+const Options = () => {
 
     return (
 			<>
 				<div className='options'>
 					<Button
-						disabled={!started}
-						onClick={() => reset()}
+						disabled={false}
+						onClick={() => {}}
 						className='button reset grp'>
 						Reset
 					</Button>
 					<ToggleButtonGroup
-                        className='grp'
-						onChange={changeMode}
+						className='grp'
+						onChange={() => {}}
 						type='radio'
 						name='mode-options'
 						defaultValue={'pvp'}>
 						<ToggleButton
-							variant={mode === 'ai' ? 'outline-primary' : 'primary'}
+							variant={'outline-primary'}
 							id='tbg-radio-1'
 							value={'pvp'}>
 							PVP
 						</ToggleButton>
 						<ToggleButton
-							variant={mode === 'pvp' ? 'outline-danger' : 'danger'}
+							variant={'outline-danger'}
 							id='tbg-radio-2'
 							value={'ai'}>
 							vs AI
 						</ToggleButton>
 					</ToggleButtonGroup>
 					<ToggleButtonGroup
-                        className='grp'
-						onChange={changeSize}
+						className='grp'
+						onChange={() => {}}
 						type='radio'
 						name='size-options'
 						defaultValue={'small'}>
 						<ToggleButton
-							variant={size === 'large' ? 'outline-primary' : 'primary'}
+							variant={'outline-primary'}
 							id='tbg-radio-3'
 							value={'small'}>
 							3x3
 						</ToggleButton>
 						<ToggleButton
-							variant={size === 'small' ? 'outline-success' : 'success'}
+							variant={'outline-success'}
 							id='tbg-radio-4'
 							value={'large'}>
 							5x5
