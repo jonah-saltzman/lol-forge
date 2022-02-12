@@ -7,6 +7,6 @@
    "corsConfiguration": [],
    "enableCloudfront": false,
    "retries": 20,
-   "domain": "mm-tic-tac-toe",
+   "domain": "lol-forge-site",
    "configFile": ".s3-website.json"
 }
