@@ -1,13 +1,14 @@
-import React, { createRef, useContext, useEffect, useState } from "react";
+import React, { createRef, FormEventHandler, useContext, useEffect, useState } from "react";
+import api from "./api/auth";
 import { toast } from "react-toastify";
-import { authContext } from "./App";
+import { authContext, initialContext } from "./App";
 import {
     Button,
 	Navbar,
     Modal,
     Container,
     Form,
-    CloseButton
+    CloseButton,
 } from 'react-bootstrap'
 
 interface NavProps {
@@ -20,23 +21,30 @@ const Nav = ({toggle}: NavProps) => {
     const [oldPass, setOldPass] = useState('')
     const [newPass, setNewPass] = useState('')
     const [confirm, setConfirm] = useState('')
+    const [newEmail, setEmail] = useState('')
+    const [staySignedIn, setStaySignedIn] = useState(true)
     const [show, setShow] = useState(false)
     const [changePass, setChangePass] = useState(false)
     const [signIn, setSignIn] = useState(true)
     const [title, setTitle] = useState(loggedIn ? email : signIn ? 'Sign In' : 'Sign Up')
-    const [listener, setListener] = useState(null)
-    const modalRef = createRef()
+
+    useEffect(() => {
+        setTitle(loggedIn ? email : signIn ? 'Sign In' : 'Sign Up')
+    }, [loggedIn, signIn])
 
     const toggleAuth = () => {
 		setSignIn(!signIn)
 	}
 
-    const handleChangePass = () => {
-        return
-    }
-
     const signOut = () => {
-
+        api.signOut(token)
+        toast(`Goodbye, ${email}`)
+        setAuth(initialContext)
+        setEmail('')
+        reset()
+        setShow(false)
+        setSignIn(true)
+        window.localStorage.removeItem('auth')
     }
 
     const recursiveCheck = (element: Element, target: Element): boolean => {
@@ -60,14 +68,10 @@ const Nav = ({toggle}: NavProps) => {
     }
 
     const onClick = (event: MouseEvent) => {
-        console.log('onClick, show: ', show)
         const content = document.getElementsByClassName('modal-content')[0]
         const clicked = event.target as Element
-        for (const i in content.children) {
-            if (recursiveCheck(content, clicked)) {
-                console.log('recursive TRUE')
-                return
-            }
+        if (recursiveCheck(content, clicked)) {
+            return
         }
         setShow(false)
         removeEventListener('click', onClick)
@@ -78,76 +82,231 @@ const Nav = ({toggle}: NavProps) => {
         setShow(false)
     }
 
-    const changePassForm = (
-			<Container className='flex'>
-				<Form onSubmit={handleChangePass} className='flex-v pass-form'>
-					<input
-						className='input mb-3'
-						type='password'
-						name='oldPass'
-						id='oldPass'
-						value={oldPass}
-						onChange={(e) => setOldPass(e.target.value)}
-						placeholder='Current password'
-					/>
-					<input
-						className='input mb-3'
-						type='password'
-						name='newwPass'
-						id='newPass'
-						value={newPass}
-						onChange={(e) => setNewPass(e.target.value)}
-						placeholder='New password'
-					/>
-					<input
-						className='input mb-3'
-						type='password'
-						name='newPassConf'
-						id='newPassConf'
-						value={confirm}
-						onChange={(e) => setConfirm(e.target.value)}
-						placeholder='Confirm new password'
-					/>
-					<div className='center-item'>
-						<Button onClick={() => setChangePass(false)} className='btn-secondary mb-3'>
-							Cancel
-						</Button>
-						<Button className='ml-3 mb-3' color='primary' type='submit'>
-							Change Password
-						</Button>
-					</div>
-				</Form>
-			</Container>
-		)
+    const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
+        e.preventDefault()
+        toast.dismiss()
+        const form = validate(loggedIn ? 'change' : signIn ? 'signin' : 'signup')
+        if (!form) {
+            toast('Please fix errors in form')
+            return
+        } else {
+            if (loggedIn) {
+                const res = await api.changePassword(form as ChangePass)
+                if (res) {
+                    toast('Successfully changed password')
+                    reset()
+                    setEmail('')
+                    setChangePass(false)
+                } else {
+                    toast('Current password incorrect')
+                    reset()
+                }
+            } else if (signIn) {
+                const res = await api.login(form as Login)
+                if (res.loggedIn) {
+                    login(res)
+                } else {
+                    toast(res.message)
+                    reset()
+                }
+            } else {
+                if (await api.signUp(form as Login)) {
+                    const res = await api.login(form as Login)
+                    if (res.loggedIn) {
+                        login(res)
+                    } else {
+                        toast('Account created but login failed')
+                        setSignIn(true)
+                        reset()
+                    }
+                } else {
+                    toast('Failed to create account')
+                    reset()
+                }
+            }
+        }
+    }
+
+    const login = (res: LoginResponse) => {
+        setAuth(res)
+        toast(res.message)
+        setShow(false)
+        reset()
+        setEmail('')
+        if (staySignedIn) {
+            const str = JSON.stringify(res)
+            window.localStorage.setItem('auth', str)
+        }
+    }
+
+    const reset = () => {
+        setOldPass('')
+        setNewPass('')
+        setConfirm('')
+        setStaySignedIn(true)
+    }
+
+    const validate = (type: AuthType): ChangePass | Login | null => {
+        switch (type) {
+            case 'signin':
+                if (!newEmail || !newPass) return null
+                return {email: newEmail, password: newPass} as Login
+            case 'signup':
+                if (!newEmail || !newPass || !confirm || confirm !== newPass) return null
+                return {email: newEmail, password: newPass} as Login
+            case 'change':
+                if (!oldPass || !newPass || !confirm || confirm !== newPass) return null
+                return {oldPass, newPass, token} as ChangePass
+        }
+    }
+
+        const loginForm = (
+					<Form className='formcard flex-v auth-form' onSubmit={handleSubmit}>
+						<Form.Group hidden={loggedIn} className='mt-2'>
+							<input
+								className='input'
+								type='email'
+								name='email'
+								id='email'
+								placeholder='Email'
+								value={newEmail}
+								onChange={(e) => setEmail(e.target.value)}
+							/>
+						</Form.Group>
+						<Form.Group hidden={!loggedIn}>
+							<input
+								className='input mt-4'
+								type='password'
+								name='password'
+								id='password'
+								value={oldPass}
+								onChange={(e) => setOldPass(e.target.value)}
+								placeholder='Current password'
+							/>
+						</Form.Group>
+						<Form.Group>
+							<input
+								className='input mt-4'
+								type='password'
+								name='password'
+								id='password'
+								value={newPass}
+								onChange={(e) => setNewPass(e.target.value)}
+								placeholder={loggedIn ? 'New Password' : 'Password'}
+							/>
+						</Form.Group>
+						{loggedIn || (!loggedIn && !signIn) ? (
+							<Form.Group key='password-confirm'>
+								<input
+									className='input mt-4'
+									type='password'
+									name='password-confirm'
+									id='password-confirm'
+									value={confirm}
+									onChange={(e) => setConfirm(e.target.value)}
+									placeholder='Confirm password'
+								/>
+							</Form.Group>
+						) : null}
+						<Form.Group hidden={loggedIn} className='mt-2 ml-3'>
+							<Form.Label>
+								<Form.Check
+									className='checkmark'
+									type='checkbox'
+									onChange={() => {
+										setStaySignedIn(!staySignedIn)
+									}}
+									checked={staySignedIn}
+								/>{' '}
+								Stay signed in
+							</Form.Label>
+						</Form.Group>
+						<Form.Group className='toggle-btns mt-2'>
+							<Button
+								hidden={loggedIn && !changePass}
+								variant='outline-primary'
+								type='submit'
+								className='text-uppercase center-item'
+								style={{
+									padding: '3px',
+									fontSize: '18px',
+									width: '45%',
+									marginRight: '0.2rem',
+								}}>
+								{changePass
+									? 'Change Password'
+									: signIn
+									? 'Sign in'
+									: 'Register'}
+							</Button>
+							<Button
+								hidden={loggedIn}
+								onClick={(e) => {
+									const btn = e.target as HTMLElement
+									btn.blur()
+									toggleAuth()
+								}}
+								variant='outline-secondary'
+								className='text-uppercase center-item'
+								style={{
+									padding: '3px',
+									fontSize: '18px',
+									width: '45%',
+									marginLeft: '0.2rem',
+								}}>
+								{signIn ? 'Register' : 'Sign in'}
+							</Button>
+						</Form.Group>
+					</Form>
+				)
 
 		const authModal = (
 			<Modal
 				keyboard={false}
 				backdrop={true}
 				show={show}
-				ref={modalRef}
 				onEntered={() => {
 					addEventListener('click', onClick)
 				}}>
+				<CloseButton className='close-modal' onClick={closeButton} />
 				<Modal.Header className='account-title'>
-					<CloseButton className='close-modal' onClick={closeButton} />
 					<Modal.Title className='text-large'>{title}</Modal.Title>
 				</Modal.Header>
 				<Modal.Body>
-					{changePass ? changePassForm : null}
+					{changePass ? loginForm : loggedIn ? null : loginForm}
 					<div className='flex'>
 						<div className='center-item'>
 							{loggedIn ? (
 								changePass ? (
-									<Button onClick={signOut} className={'btn-warning ml-3'}>
-										Logout
+									<Button
+										variant='outline-secondary'
+										onClick={(e) => {
+											;(e.target as HTMLElement).blur()
+											setChangePass(false)
+										}}
+										className={'ml-3'}>
+										Cancel
 									</Button>
 								) : (
-									<Button
-										color='primary'
-										onClick={() => setChangePass(!changePass)}>
-										Change Password
-									</Button>
+									<>
+										<Button
+											color='primary'
+											variant='outline-primary'
+											onClick={(e) => {
+												;(e.target as HTMLElement).blur()
+												setChangePass(true)
+											}}>
+											Change Password
+										</Button>
+										<Button
+											variant='outline-danger'
+											onClick={(e) => {
+												;(e.target as HTMLElement).blur()
+												signOut()
+											}}>
+											Sign Out
+										</Button>
+									</>
 								)
 							) : null}
 						</div>
