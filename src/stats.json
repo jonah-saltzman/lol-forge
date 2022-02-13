@@ -1,0 +1,127 @@
+[
+	{
+		"statId" : 0,
+		"statName" : "armor",
+		"alias" : null
+	},
+	{
+		"statId" : 1,
+		"statName" : "armorPenetration",
+		"alias" : "armor_penetration"
+	},
+	{
+		"statId" : 2,
+		"statName" : "attackDamage",
+		"alias" : "attack_damage"
+	},
+	{
+		"statId" : 3,
+		"statName" : "attackSpeed",
+		"alias" : "attack_speed"
+	},
+	{
+		"statId" : 5,
+		"statName" : "criticalStrikeChance",
+		"alias" : "critical_strike_chance"
+	},
+	{
+		"statId" : 6,
+		"statName" : "goldPer_10",
+		"alias" : "gold_per_10"
+	},
+	{
+		"statId" : 7,
+		"statName" : "healAndShieldPower",
+		"alias" : "heal_and_shield_power"
+	},
+	{
+		"statId" : 8,
+		"statName" : "health",
+		"alias" : null
+	},
+	{
+		"statId" : 9,
+		"statName" : "healthRegen",
+		"alias" : "health_regen"
+	},
+	{
+		"statId" : 10,
+		"statName" : "lethality",
+		"alias" : null
+	},
+	{
+		"statId" : 11,
+		"statName" : "lifesteal",
+		"alias" : "life_steal"
+	},
+	{
+		"statId" : 12,
+		"statName" : "magicPenetration",
+		"alias" : "magic_penetration"
+	},
+	{
+		"statId" : 13,
+		"statName" : "magicResistance",
+		"alias" : "magic_resistance"
+	},
+	{
+		"statId" : 14,
+		"statName" : "mana",
+		"alias" : null
+	},
+	{
+		"statId" : 15,
+		"statName" : "manaRegen",
+		"alias" : "mana_regen"
+	},
+	{
+		"statId" : 16,
+		"statName" : "movespeed",
+		"alias" : null
+	},
+	{
+		"statId" : 17,
+		"statName" : "abilityHaste",
+		"alias" : "ability_haste;cooldown_reduction;cooldownReduction"
+	},
+	{
+		"statId" : 18,
+		"statName" : "omnivamp",
+		"alias" : null
+	},
+	{
+		"statId" : 19,
+		"statName" : "tenacity",
+		"alias" : null
+	},
+	{
+		"statId" : 20,
+		"statName" : "abilityPower",
+		"alias" : "ability_power"
+	},
+	{
+		"statId" : 21,
+		"statName" : "criticalStrikeDamage",
+		"alias" : "critical_strike_damage"
+	},
+	{
+		"statId" : 22,
+		"statName" : "criticalStrikeDamageModifier",
+		"alias" : "critical_strike_damage_modifier"
+	},
+	{
+		"statId" : 23,
+		"statName" : "attackSpeedRatio",
+		"alias" : "attack_speed_ratio"
+	},
+	{
+		"statId" : 24,
+		"statName" : "attackCastTime",
+		"alias" : "attack_cast_time"
+	},
+	{
+		"statId" : 25,
+		"statName" : "attackTotalTime",
+		"alias" : "attack_total_time"
+	}
+]

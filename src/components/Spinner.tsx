@@ -6,11 +6,7 @@ interface SpinProps {
     show: boolean
 }
 
-const Spinner: React.FC = ({children}) => {
-    const [showSpin, setShowSpin] = useState(false)
-    const toggle = () => {
-        setShowSpin(!showSpin)
-    }
+const Spinner = (props: SpinProps) => {
     const thinker = (
 			<div className='thinker'>
 				<span className='think-text'>Loading...</span>
@@ -21,19 +17,13 @@ const Spinner: React.FC = ({children}) => {
 			<Modal
 				centered
 				dialogClassName='modal-50w'
-				show={showSpin}
+				show={props.show}
 				backdrop='static'
 				keyboard={false}>
 				{thinker}
 			</Modal>
 		)
-        const childrenWithToggle = React.Children.map(children, child => {
-            if (React.isValidElement(child)) {
-                return React.cloneElement(child, {toggle})
-            }
-            return child
-        })
-        return <>{childrenWithToggle}{modal}</>
+        return modal
 }
 
 export default Spinner

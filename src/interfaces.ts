@@ -42,6 +42,54 @@ interface AuthContext {
     auth: Auth
 }
 
+// enum ChampModifiers {
+// 	FLAT = 'flat',
+// 	PERCENT = 'percent',
+// 	perLevel = 'perLevel',
+// 	PPL = 'percentPerLevel',
+// }
+
+type Mods = {
+    flat?: number,
+    percent?: number,
+    perLevel?: number
+}
+
+type StatType = {
+    statId: number
+}
+
+type OneStat = StatType & Mods
+
+// interface BaseStat {
+//     statId: number
+// 	flat: number
+// 	percent: number
+//     perLevel: number
+//     percentPerLevel: number
+//     percentBase?: number
+//     percentBonus?: number
+// }
+
+// interface ChampStat extends BaseStat {
+// }
+
+// interface ItemStat extends BaseStat {
+//     percentBase: number
+//     percentBonus: number
+//     unique: boolean
+//     named: string
+//     passive: boolean
+// }
+
+// type Stat = ChampStat | ItemStat
+
+type StatData = {
+    statId: number,
+    statName: string,
+    alias: string | null
+}
+
 // TODOs
 
 // Stats
