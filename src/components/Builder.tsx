@@ -1,8 +1,7 @@
 import React, {useState, useEffect, useContext} from "react";
 import { champContext, itemContext, authContext } from "../App";
-import { matchSorter } from "match-sorter";
 import Spinner from "./Spinner";
-import Select from "react-select";
+import Select, {createFilter} from "react-select";
 import { Champ } from '../classes/champ'
 import { Build } from '../classes/build'
 import OneBuild from "./OneBuild";
@@ -17,6 +16,8 @@ interface BuildProps {
     build?: Build
     newChamp: (id: number) => void
 }
+
+const search = createFilter({ ignoreCase: true, matchFrom: 'start' })
 
 const Builder = (props: BuildProps) => {
 	const champs = useContext(champContext)
@@ -101,12 +102,13 @@ const Builder = (props: BuildProps) => {
 						closeMenuOnScroll={false}
 						formatOptionLabel={ChampSelector}
 						options={champOptions}
-						onInputChange={(val) => {
-							const newArr = matchSorter(champs.champs, val, {
-								keys: ['champName'],
-							})
-							setChampList(newArr)
-						}}
+                        filterOption={search}
+						// onInputChange={(val) => {
+						// 	const newArr = matchSorter(champs.champs, val, {
+						// 		keys: ['champName'],
+						// 	})
+						// 	setChampList(newArr)
+						// }}
 					/>
 				</div>
 			)}
