@@ -14,12 +14,14 @@ export class Champ extends Stat implements ChampInfo {
 	title: string
 	icon: string
 	resourceType: string
+    hasStats: boolean
 	constructor(info: ChampInfo, stats?: OneStat[]) {
 		super(stats || [])
         this.champId = info.champId
         this.champName = info.champName
         this.icon = info.icon
         this.resourceType = info.resourceType
+        this.hasStats = (stats !== undefined)
 	}
     addStats(stats: OneStat[]) {
         const info: ChampInfo = {

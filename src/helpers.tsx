@@ -1,13 +1,12 @@
 import React from "react"
 import Fuse from 'fuse.js'
-import { SelectSearchOption } from "react-select-search"
 
-type ChampItem = {name: string, value: number}
+type Item = {name: string, value: number}
 
-export function champSearch(options: SelectSearchOption[]) {
-	const fuse = new Fuse<SelectSearchOption>(options, {
+export function createSearch(options: Item[]) {
+	const fuse = new Fuse<Item>(options, {
 		keys: ['name'],
-		threshold: 0.3,
+		threshold: 0.6,
 	})
 
 	return (query: string) => {

@@ -1,80 +1,78 @@
 import React, {useState, useEffect, useContext} from "react";
-import { champContext } from "../App";
+import { champContext, itemContext, authContext } from "../App";
+import { matchSorter } from "match-sorter";
 import Spinner from "./Spinner";
-import SelectSearch, { DomProps, OptionSnapshot, SelectedOption, SelectedOptionValue, SelectSearchProps } from "react-select-search";
-import ChampSelector from "./ChampSelector";
-import { champSearch } from "../helpers";
+import Select from "react-select";
+import { Champ } from '../classes/champ'
+import { Build } from '../classes/build'
 
-const Main = () => {
-    const champs = useContext(champContext)
-    const [loading, setLoading] = useState(true)
-    const [fuse, setFuse] = useState(null)
-    const [champInput, setChampInput] = useState('')
-
-    const onChampChange = (val: SelectedOptionValue) => {
-        const id = toNum(val)
-        setChampInput(champs.champs[id].champName)
-    }
-
-    const selectChamp = (id: number) => {
-        setChampInput(champs.champs[id].champName)
-    }
-
-    useEffect(() => {
-        if (!champs || Object.keys(champs).length === 0) {
-            return
-        } else {
-            setLoading(false)
-            console.log(champs.champNames())
-        }
-    }, [champs])
-
-    useEffect(() => {
-        console.log(champInput)
-    }, [champInput])
-
-    const champOptions = champs
-			.champIds()
-			.map((id) => ({ name: champs.champs[id].champName, value: id }))
-
-    const search = champSearch(champOptions)
-
-    const champSelector = (
-			domProps: DomProps,
-			option: SelectedOption,
-			snapshot: OptionSnapshot,
-			className: string
-		): React.ReactNode => {
-            const champ = champs.champs[parseInt(option.value)]
-            const props = {domProps, option, snapshot, className}
-            return (
-               ChampSelector(champ, props, selectChamp)
-            )
-        }
-
-    return (
-			<>
-				<Spinner center={true} show={loading} />
-				<SelectSearch
-					filterOptions={champSearch}
-					options={champOptions}
-					search
-					placeholder='Enter champion name'
-					id='champSearch'
-					className={'champselect'}
-					multiple={false}
-					value={champInput}
-					onChange={onChampChange}
-                    renderOption={champSelector}
-				/>
-			</>
-		)
+interface ChampItem {
+    value: number
+    label: string
+    name: string
 }
 
-const toNum = (e: SelectedOptionValue) => {
-    const u = e as unknown
-    const num = u as number
-    return num
+
+const Main = () => {
+	const champs = useContext(champContext)
+	const items = useContext(itemContext)
+	const [loading, setLoading] = useState(true)
+	const [champList, setChampList] = useState<Champ[]>(null)
+    const [builds, setBuilds] = useState<Build[]>(null)
+
+    const champMapper = (champs: Champ[]): ChampItem[] => {
+        if (!champs.length) return []
+			return champs.map((champ) => ({
+				value: champ.champId,
+				label: champ.champName,
+				name: champ.champName,
+			}))
+		}
+
+    const ChampSelector = (item: ChampItem) => {
+        const champ = champs.champs.find(champ => champ.champId === item.value)
+			return (
+				<div className='champ-select'>
+					<img src={champ.icon} className='small-icon' />
+					<span className='small-name'>{champ.champName}</span>
+				</div>
+			)
+		}
+
+	useEffect(() => {
+		if (!champs.champs.length || !items.items.length || !loading) {
+			return
+		} else {
+			setLoading(false)
+			setChampList(champs.champs)
+		}
+	}, [champs.champs, items.items])
+
+    useEffect(() => {
+        console.log(champList?.length)
+    }, [champList])
+
+    const champOptions = loading ? null : champMapper(champList)
+
+	return (
+		<>
+			<Spinner center={true} show={loading} />
+			{loading ? null : (
+				<Select
+					blurInputOnSelect={false}
+					closeMenuOnSelect={false}
+					closeMenuOnScroll={false}
+                    formatOptionLabel={ChampSelector}
+					options={champOptions}
+					onInputChange={(val) => {
+						console.log(val)
+						const newArr = matchSorter(champs.champs, val, { keys: ['champName'] })
+						setChampList(newArr)
+					}}
+				/>
+			)}
+		</>
+	)
 }
 
 export default Main
