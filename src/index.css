@@ -269,6 +269,13 @@ textarea:-moz-placeholder {
     height: 2rem;
 }
 
+.item-select {
+    width: 50%;
+    margin-top: 2rem;
+    width: 20rem;
+    height: 2rem;
+}
+
 .small-icon {
     max-width: 3rem;
 }

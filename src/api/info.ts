@@ -36,7 +36,7 @@ export const getItemStats = async (ids: number[]): Promise<ItemStats[]> => {
 }
 
 export const getChampStats = async (id: number): Promise<OneStat[]> => {
-    const res = await call('/champs/' + id.toString(), 'GET')
+    const res = await call('/champ/' + id.toString(), 'GET')
     return res.status === 200
         ? await res.json() as OneStat[]
         : null

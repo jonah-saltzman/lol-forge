@@ -15,6 +15,7 @@ export class Champ extends Stat implements ChampInfo {
 	icon: string
 	resourceType: string
     hasStats: boolean
+    statsArr?: OneStat[]
 	constructor(info: ChampInfo, stats?: OneStat[]) {
 		super(stats || [])
         this.champId = info.champId
@@ -22,6 +23,7 @@ export class Champ extends Stat implements ChampInfo {
         this.icon = info.icon
         this.resourceType = info.resourceType
         this.hasStats = (stats !== undefined)
+        if (this.hasStats) this.statsArr = stats
 	}
     addStats(stats: OneStat[]) {
         const info: ChampInfo = {

@@ -1,20 +1,23 @@
 const path = require('path')
 const HtmlWebPackPlugin = require('html-webpack-plugin')
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 module.exports = {
 	entry: '/src/index.tsx',
 	output: {
-		path: path.resolve(__dirname, 'dist'),
+		path: path.resolve(__dirname, 'prod'),
 	},
-	devServer: {
+	mode: 'production',
+	devtool: 'source-map',
+    devServer: {
 		static: {
 			directory: path.join(__dirname, 'public'),
 		},
 		compress: true,
 		port: 9000,
 		open: true,
-	},
+    },
 	module: {
 		rules: [
 			{
@@ -31,21 +34,9 @@ module.exports = {
 				test: /\.css$/,
 				include: [
 					path.resolve(__dirname, 'src'),
-					path.resolve(__dirname, 'node_modules/react-toastify/dist'),
-					path.resolve(
-						__dirname,
-						'node_modules/bootstrap/dist/css/bootstrap.min.css'
-					),
-					path.resolve(
-						__dirname,
-						'node_modules/react-grid-layout/css/styles.css'
-					),
-					path.resolve(
-						__dirname,
-						'node_modules/react-resizable/css/styles.css'
-					),
+					path.resolve(__dirname, 'public'),
 				],
-				use: ['style-loader', 'css-loader'],
+				use: [MiniCssExtractPlugin.loader, 'css-loader'],
 			},
 			{
 				test: /\.tsx?$/,
@@ -58,7 +49,11 @@ module.exports = {
 		new HtmlWebPackPlugin({
 			template: './src/index.html',
 		}),
-		new FaviconsWebpackPlugin('./src/logo.png'),
+		new MiniCssExtractPlugin({
+			filename: '[name].css',
+			chunkFilename: '[id].css',
+		}),
+		new FaviconsWebpackPlugin('./public/logo.png'),
 	],
 	resolve: {
 		extensions: ['.ts', '.tsx', '.js', '.jsx'],

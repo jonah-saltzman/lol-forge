@@ -32,83 +32,113 @@ export class Build {
 	items: Item[]
 	buildId?: number
 	saved: boolean
-	constructor(info: BuildInfo, champC: ChampContext, itemC: ItemContext, champ?: Champ, items?: Item[]) {
+	constructor(
+		info: BuildInfo,
+		champC: ChampContext,
+		itemC: ItemContext,
+		champ?: Champ,
+		items?: Item[]
+	) {
 		this.buildName = info.buildName
-		this.champ = champ ? champ : champC.addChampStats(info.champId, info.champStats)
-		this.items = items ? items : info.items.map((item) => {
-            return itemC.addItemStats(item.itemId, item.stats)
-        })
+		this.champ = champ
+			? champ
+			: champC.addChampStats(info.champId, info.champStats)
+		this.items = items
+			? items
+			: info.items.map((item) => {
+					return itemC.addItemStats(item.itemId, item.stats)
+			  }) && ([] as Item[])
 		this.buildId = info.buildId
 	}
 	public static async create(
 		buildName: string,
 		champ: Champ,
 		champC: ChampContext,
-        itemC: ItemContext,
+		itemC: ItemContext,
 		items?: Item[]
 	): Promise<Build> {
-        ('in static create')
-        let addItems: Item[] = items
-        let addChamp: Champ = champ
-        if (items) {
-            const itemStats = await getItemStats(items.map(item => item.itemId))
-            if (itemStats) {
-                addItems = itemStats.map((stat) =>
-                    itemC.addItemStats(stat.itemId, stat.stats)
-                )
-            }
-        }
-        const champStats = await getChampStats(champ.champId)
-        if (champStats) addChamp = champC.addChampStats(champ.champId, champStats)
-        const info: BuildInfo = {
-            buildName,
-            champId: addChamp.champId,
-            champStats: [],
-            items: []
-        }
-        const newBuild = new Build(info, champC, itemC, addChamp, addItems)
-        return newBuild
-    }
-    async changeChamp(newChamp: Champ, champC: ChampContext): Promise<void> {
-        if (newChamp.hasStats) {
-            this.champ = newChamp
-            return
-        } else {
-            const stats = await getChampStats(newChamp.champId)
-            this.champ = champC.addChampStats(newChamp.champId, stats)
-            return
-        }
-    }
-    async save(token: string): Promise<boolean> {
-        if (this.buildId) {
-            return this.verifyResponse(await patchBuild(token, this))
-        } else {
-            const newBuildInfo = await createBuild(token, this)
-            if (newBuildInfo) {
-                this.buildId = newBuildInfo.buildId
-                return true
-            } else {
-                return false
-            }
-        }
-    }
-    async delete(token: string): Promise<boolean> {
-        return await deleteBuild(token, this)
-    }
-    toObject(): BuildPost {
-        return {
-            buildId: this.buildId,
-            champId: this.champ.champId,
-            items: this.items.map(item => item.itemId),
-            buildName: this.buildName
-        }
-    }
-    verifyResponse(res: BuildInfo): boolean {
-        if (this.buildId && this.buildId !== res.buildId) return false
-        if (this.buildName && this.buildName !== res.buildName) return false
-        if (this.champ.champId !== res.champId) return false
-        if (!this.items.every(item => res.items.some(info => info.itemId === item.itemId))) return false
-        if (this.items.length !== res.items.length) return false
-        return true
-    }
+		let addItems: Item[] = items
+		let addChamp: Champ = champ
+		if (items) {
+			const itemStats = await getItemStats(items.map((item) => item.itemId))
+			if (itemStats) {
+				addItems = itemStats.map((stat) =>
+					itemC.addItemStats(stat.itemId, stat.stats)
+				)
+			}
+		}
+		const champStats = await getChampStats(champ.champId)
+		if (champStats) addChamp = champC.addChampStats(champ.champId, champStats)
+		const info: BuildInfo = {
+			buildName,
+			champId: addChamp.champId,
+			champStats: [],
+			items: [],
+		}
+		const newBuild = new Build(info, champC, itemC, addChamp, addItems)
+		return newBuild
+	}
+	async changeChamp(newChamp: Champ, champC: ChampContext): Promise<void> {
+		if (newChamp.hasStats) {
+			this.champ = newChamp
+			return
+		} else {
+			const stats = await getChampStats(newChamp.champId)
+			this.champ = champC.addChampStats(newChamp.champId, stats)
+			return
+		}
+	}
+	async save(token: string): Promise<boolean> {
+		if (this.buildId) {
+			return this.verifyResponse(await patchBuild(token, this))
+		} else {
+			const newBuildInfo = await createBuild(token, this)
+			if (newBuildInfo) {
+				this.buildId = newBuildInfo.buildId
+				return true
+			} else {
+				return false
+			}
+		}
+	}
+	async delete(token: string): Promise<boolean> {
+		return await deleteBuild(token, this)
+	}
+	toObject(): BuildPost {
+		return {
+			buildId: this.buildId,
+			champId: this.champ.champId,
+			items: this.items.map((item) => item.itemId),
+			buildName: this.buildName,
+		}
+	}
+	verifyResponse(res: BuildInfo): boolean {
+		if (this.buildId && this.buildId !== res.buildId) return false
+		if (this.buildName && this.buildName !== res.buildName) return false
+		if (this.champ.champId !== res.champId) return false
+		if (
+			!this.items.every((item) =>
+				res.items.some((info) => info.itemId === item.itemId)
+			)
+		)
+			return false
+		if (this.items.length !== res.items.length) return false
+		return true
+	}
+	public static async fromChamp(
+		champ: Champ,
+		champC: ChampContext,
+		itemC: ItemContext
+	): Promise<Build> {
+		const items: ItemInfo[] = []
+		const info: BuildInfo = {
+			champId: champ.champId,
+			champStats: champ.hasStats
+				? champ.statsArr
+				: await getChampStats(champ.champId),
+			items,
+		}
+		return new Build(info, champC, itemC, champ)
+	}
+    
 }

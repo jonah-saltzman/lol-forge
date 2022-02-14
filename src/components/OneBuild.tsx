@@ -15,14 +15,21 @@ const OneBuild = (props: OneProps) => {
     const [tray, setTray] = useState(props.build?.items ?? [])
 
     useEffect(() => {
-        if (!props.build) return
-        setTray(props.build.items)
+        console.log('in onebuild')
+        console.log(props.build)
     }, [props.build])
+
+    useEffect(() => {
+        if (!props.build) return
+        console.log('setting tray:')
+        console.log(props.build.items)
+        setTray(props.build.items)
+    }, [props.build?.items])
 
     return (
         <Tray>
             {slots.map(i => {
-                return tray[i] ? <Slot key={i} item={tray[i]} i={i} /> : <Slot key={i} i={i} />
+                return tray[i] ? <Slot key={i + tray[i].itemId} item={tray[i]} i={i} /> : <Slot key={i} i={i} />
             })}
         </Tray>
     )
