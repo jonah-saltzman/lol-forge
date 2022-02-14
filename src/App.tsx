@@ -14,16 +14,45 @@ export const initialContext: Auth = {
 	token: null,
 }
 
+type ChampObject = {
+    [key: number]: Champ
+}
+
+interface ChampContext {
+    champs: ChampObject
+    addStats: (champ: Champ, stats: OneStat[]) => void
+    champNames: () => string[]
+    champIds: () => number[]
+}
+
 export const authContext = createContext<AuthContext | null>(null)
-export const champContext = createContext<Champ[] | null>(null)
+export const champContext = createContext<ChampContext | null>(null)
 
 const App = () => {
     const [auth, setAuth] = useState(initialContext)
-    const [allChamps, setAllChamps] = useState<Champ[]>(null)
+    const [champs, setChamps] = useState<ChampObject>({})
+    const addStats = (champ: Champ, stats: OneStat[]): void => {
+        const newChamp = champ.addStats(stats)
+        const newObj = {...champs}
+        newObj[champ.champId] = newChamp
+        setChamps(newObj)
+    }
+    const champNames = () => {
+        return Object.values(champs).map(champ => champ.champName)
+    }
+    const champIds = () => {
+        return Object.keys(champs).map(id => parseInt(id))
+    }
     useEffect(() => {
         const auth = window.localStorage.getItem('auth')
         getChamps()
-					.then((champs) => setAllChamps(champs))
+					.then((champs) => {
+                        let obj: ChampObject = {}
+                        for (const champ of champs) {
+                            obj[champ.champId] = champ
+                        }
+                        setChamps(obj)
+                    })
 					.then(() => console.log('got all champs'))
         if (auth) {
             const authData = JSON.parse(auth) as Auth
@@ -33,7 +62,7 @@ const App = () => {
     },[])
 	return (
 		<authContext.Provider value={{ auth, setAuth }}>
-			<champContext.Provider value={allChamps}>
+			<champContext.Provider value={{champs, addStats, champIds, champNames}}>
 				<ToastContainer />
 				<Nav />
 				<div className='main'><Main /></div>
