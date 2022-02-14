@@ -1,7 +1,5 @@
-import React, {useContext, createContext, useState, useEffect} from 'react'
+import React, { createContext, useState, useEffect} from 'react'
 import { toast, ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-import 'bootstrap/dist/css/bootstrap.min.css'
 import Nav from './Nav'
 import { Champ } from './classes/champ'
 import { Item } from './classes/item'
