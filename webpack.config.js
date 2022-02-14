@@ -32,9 +32,18 @@ module.exports = {
 				include: [
 					path.resolve(__dirname, 'src'),
 					path.resolve(__dirname, 'node_modules/react-toastify/dist'),
-					path.resolve(__dirname, 'node_modules/bootstrap/dist/css/bootstrap.min.css'),
-                    path.resolve(__dirname, 'node_modules/react-grid-layout/css/styles.css'),
-                    path.resolve(__dirname, 'node_modules/react-resizable/css/styles.css')
+					path.resolve(
+						__dirname,
+						'node_modules/bootstrap/dist/css/bootstrap.min.css'
+					),
+					path.resolve(
+						__dirname,
+						'node_modules/react-grid-layout/css/styles.css'
+					),
+					path.resolve(
+						__dirname,
+						'node_modules/react-resizable/css/styles.css'
+					),
 				],
 				use: ['style-loader', 'css-loader'],
 			},
@@ -47,9 +56,9 @@ module.exports = {
 	},
 	plugins: [
 		new HtmlWebPackPlugin({
-			template: './src/index.html'
+			template: './src/index.html',
 		}),
-        new FaviconsWebpackPlugin('./src/logo.png')
+		new FaviconsWebpackPlugin('./src/logo.png'),
 	],
 	resolve: {
 		extensions: ['.ts', '.tsx', '.js', '.jsx'],

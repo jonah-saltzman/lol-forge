@@ -6,6 +6,7 @@ interface ListProps {
     builds: Build[]
     select: (id?: number) => void
     addBuild: (name: string) => void
+    authed: boolean
 }
 
 const List = (props: ListProps) => {
@@ -52,12 +53,14 @@ const List = (props: ListProps) => {
 							</div>
 					  ))
 					: null}
-				<div
-					key={props.builds.length + 1 && -1}
-					onClick={() => setNewBuild(true)}
-					className='build-li'>
-					{newBuild ? nameForm : newBuildLi}
-				</div>
+				{props.authed ? (
+					<div
+						key={props.builds.length + 1 && -1}
+						onClick={() => setNewBuild(true)}
+						className='build-li'>
+						{newBuild ? nameForm : newBuildLi}
+					</div>
+				) : null}
 			</div>
 		)
 }

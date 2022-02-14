@@ -48,9 +48,7 @@ const Builder = (props: BuildProps) => {
         props.newChamp(champ.value)
         if (props.build && auth.auth.loggedIn) {
             props.build.changeChamp(champs.champs.find(c => c.champId === champ.value), champs)
-            if (props.build.save(auth.auth.token)) {
-                toast(`Set champion to ${champ.label}`)
-            } else {
+            if (!props.build.save(auth.auth.token)) {
                 toast('Error selecting champ')
             }
         }
@@ -61,6 +59,13 @@ const Builder = (props: BuildProps) => {
         const { build: { champ: newChamp } } = props
         setChamp({ value: newChamp.champId, label: newChamp.champName })
     }, [props?.build?.champ])
+
+    useEffect(() => {
+        if (!auth.auth.loggedIn) {
+            setBuilds(null)
+            setChamp(null)
+        }
+    }, [auth.auth.loggedIn])
 
     const ChampSelector = (item: ChampItem) => {
         const champ = champs.champs.find(champ => champ.champId === item.value)
@@ -90,6 +95,7 @@ const Builder = (props: BuildProps) => {
 				<div className='selectors'>
 					<Select
 						className='champ-select'
+                        blurInputOnSelect={true}
                         value={champ}
                         onChange={selectChamp}
 						closeMenuOnScroll={false}

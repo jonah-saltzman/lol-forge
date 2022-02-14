@@ -5,8 +5,8 @@
    "prefix": "",
    "exclude": [],
    "corsConfiguration": [],
-   "enableCloudfront": true,
+   "enableCloudfront": false,
    "retries": 20,
-   "domain": "lol-forge-site",
+   "domain": "lol-builder",
    "configFile": ".s3-website.json"
 }

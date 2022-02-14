@@ -42,6 +42,7 @@ const App = () => {
     const [loaded, setLoaded] = useState(false)
     const [selected, setSelected] = useState<Build>(null)
     const [selectedChamp, setSelectedChamp] = useState<Champ>(null)
+    const [refresh, setRefresh] = useState(false)
 
     const itemNames = () => items.map(item => item.itemName)
     const itemIds = () => items.map(item => item.itemId)
@@ -70,6 +71,7 @@ const App = () => {
 
     const refreshBuilds = (selected?: number) => {
         if (!auth.loggedIn) return
+        console.log('refreshing builds')
         const champC: ChampContext = { champs, addChampStats, champIds, champNames }
         const itemC: ItemContext = { items, addItemStats, itemIds, itemNames }
         getAllBuilds(auth.token).then((infos) => {
@@ -100,6 +102,10 @@ const App = () => {
     const loadedAll = () => {
         setLoaded(true)
     }
+
+    useEffect(() => {
+        refreshBuilds()
+    }, [auth.loggedIn])
 
     useEffect(() => {
         if (!auth.loggedIn || !champs.length || !items.length || !loaded) {
@@ -149,15 +155,22 @@ const App = () => {
 					<ToastContainer />
 					<Nav />
 					<Container fluid>
-                        <Row>
-                            <Col xs={12} md={2}>
-                                <BuildList addBuild={newBuild} builds={builds} select={selectBuild} />
-                            </Col>
-                            <Col className='main-col' xs={12} md={10}>
-                                <Builder build={selected} newChamp={selectChamp} />
-                            </Col>
-                        </Row>
-                    </Container>
+						<Row>
+							{auth.loggedIn ? (
+								<Col xs={12} md={1}>
+									<BuildList
+										authed={auth.loggedIn}
+										addBuild={newBuild}
+										builds={builds}
+										select={selectBuild}
+									/>
+								</Col>
+							) : null}
+							<Col className='main-col' xs={12} md={auth.loggedIn ? 11 : 12}>
+								<Builder build={selected} newChamp={selectChamp} />
+							</Col>
+						</Row>
+					</Container>
 				</itemContext.Provider>
 			</champContext.Provider>
 		</authContext.Provider>
