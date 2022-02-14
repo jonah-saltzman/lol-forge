@@ -7,6 +7,7 @@ import { Build } from '../classes/build'
 import { Item } from "../classes/item";
 import OneBuild from "./OneBuild";
 import { toast } from "react-toastify";
+import Slot from './Slot'
 
 interface ListItem {
     value: number
@@ -15,24 +16,52 @@ interface ListItem {
 }
 
 interface BuildProps {
-    build?: Build
     newChamp: (id: number) => void
-    guestBuild: (build: Build) => void
-    updateBuild: (build: Build) => void
 }
 
 const search = createFilter({ ignoreCase: true, matchFrom: 'start' })
+
+interface JsxMap {
+    pos: number
+    jsx: JSX.Element
+    item: Item
+}
+
+const nullItem: Item = null
+
+const initialJsx = [0, 1, 2, 3, 4, 5].map(i => ({pos: i, jsx: <Slot i={i} key={i} />, item: nullItem}))
+
+const genJsx = (item: Item, i: number) => <Slot i={i} key={item.itemId + 1} item={item} />
 
 const Builder = (props: BuildProps) => {
 	const champs = useContext(champContext)
 	const items = useContext(itemContext)
     const auth = useContext(authContext)
-    const {build: selectedBuild} = useContext(buildContext)
+    const {selectedBuild, setSelectedBuild} = useContext(buildContext)
 	const [loading, setLoading] = useState(true)
 	const [champList, setChampList] = useState<Champ[]>(null)
     const [itemList, setItemList] = useState<Item[]>(null)
     const [champ, setChamp] = useState<ListItem>(null)
     const [item, setItem] = useState<ListItem>(null)
+    const [slotJsx, setSlotJsx] = useState<JsxMap[]>(initialJsx)
+
+    useEffect(() => {
+        if (!selectedBuild || !selectedBuild.items) return
+        if (selectedBuild && selectedBuild.items.length) {
+            console.log('updating tray')
+            console.log(selectedBuild.items)
+            if (slotJsx.every((jsx, i) => jsx.item.itemId === selectedBuild.items[i].itemId)) {
+                return
+            } else {
+                const newArray = initialJsx.map((j, i) => {
+                    const item = selectedBuild.items[i]
+                    if (!j.item) return {pos: i, item: item, jsx: genJsx(item, i)}
+                    else return j
+                })
+                setSlotJsx(newArray)
+            }
+        }
+    }, [selectedBuild])
 
     useEffect(() => {
         setChamp(null)
@@ -59,41 +88,43 @@ const Builder = (props: BuildProps) => {
     
     const selectChamp = (val: ListItem) => {
         setChamp(val)
-        if (!auth.auth.loggedIn && !props.build) {
+        if (!auth.auth.loggedIn && !selectedBuild) {
              Build.fromChamp(
                 champs.champs.find((c) => c.champId === val.value),
                 champs,
                 items
-            ).then(props.guestBuild)
+            ).then(setSelectedBuild)
         }
     }
 
-    const addItem = (val: ListItem) => {
+    const addItem = async (val: ListItem) => {
         setItem(null)
-        if (!props.build) return toast('Select a champion to begin')
-        if (props.build.items.length >= 6) return
-        props.build.items.push(items.items.find(i => i.itemId === val.value))
-        if (auth.auth.loggedIn) props.build.save(auth.auth.token)
-        //console.log(props.build)
-        props.updateBuild(props.build)
+        if (!selectedBuild) return toast('Select a champion to begin')
+        if (selectedBuild.items.length >= 6) return
+        selectedBuild.items.push(items.items.find((i) => i.itemId === val.value))
+        if (auth.auth.loggedIn) await selectedBuild.save(auth.auth.token)
+        setSelectedBuild(selectedBuild)
     }
 
     useEffect(() => {
         if (!champ) return
         props.newChamp(champ.value)
-        if (props.build && auth.auth.loggedIn) {
-            props.build.changeChamp(champs.champs.find(c => c.champId === champ.value), champs)
-            if (!props.build.save(auth.auth.token)) {
-                toast('Error selecting champ')
-            }
+        if (selectedBuild && auth.auth.loggedIn) {
+            selectedBuild
+							.changeChamp(
+								champs.champs.find((c) => c.champId === champ.value),
+								champs
+							)
+							.then(() => selectedBuild.save(auth.auth.token))
+                            .then(bool => {if (!bool) toast('Error selecting champ')})
         }
     }, [champ])
 
     useEffect(() => {
-        if (!props.build) return
-        const { build: { champ: newChamp } } = props
+        if (!selectedBuild || !selectedBuild.champ) return
+        const newChamp = selectedBuild.champ
         setChamp({ value: newChamp.champId, label: newChamp.champName, isChamp: true })
-    }, [props?.build?.champ])
+    }, [selectedBuild?.champ])
 
     useEffect(() => {
         if (!auth.auth.loggedIn) {
@@ -131,6 +162,7 @@ const Builder = (props: BuildProps) => {
     //     console.log(props.build)
     // }, [props.build])
 
+
 	return (
 		<>
 			<Spinner center={true} show={loading} />
@@ -149,7 +181,7 @@ const Builder = (props: BuildProps) => {
 					/>
 				</div>
 			)}
-			<OneBuild build={props.build} />
+			<div className='tray'>{slotJsx.map(jsx => jsx.jsx)}</div>
 			<div className='selectors'>
 				<Select
 					className='item-select'

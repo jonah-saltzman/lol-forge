@@ -1,38 +1,27 @@
 import React, {useContext, useEffect, useState} from "react";
-import { authContext } from "../App";
+import { authContext, buildContext } from "../App";
 import { Build } from "../classes/build";
-import Tray from "./Tray";
 import Slot from "./Slot";
 
 const slots = [0, 1, 2, 3, 4, 5]
 
-interface OneProps {
-    build?: Build
-}
 
-const OneBuild = (props: OneProps) => {
+const OneBuild = () => {
     const {auth: {token}} = useContext(authContext)
-    const [tray, setTray] = useState(props.build?.items ?? [])
+    const {selectedBuild, setSelectedBuild} = useContext(buildContext)
 
     useEffect(() => {
         console.log('in onebuild')
-        console.log(props.build)
-    }, [props.build])
+        console.log(selectedBuild)
+    }, [selectedBuild])
 
     useEffect(() => {
-        if (!props.build) return
+        if (!selectedBuild) return
         console.log('setting tray:')
-        console.log(props.build.items)
-        setTray(props.build.items)
-    }, [props.build?.items])
+        console.log(selectedBuild.items)
+    }, [selectedBuild?.items])
 
-    return (
-        <Tray>
-            {slots.map(i => {
-                return tray[i] ? <Slot key={i + tray[i].itemId} item={tray[i]} i={i} /> : <Slot key={i} i={i} />
-            })}
-        </Tray>
-    )
+    return <div className='tray'></div>
 }
 
 export default OneBuild

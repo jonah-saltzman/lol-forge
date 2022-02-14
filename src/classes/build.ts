@@ -90,9 +90,11 @@ export class Build {
 	}
 	async save(token: string): Promise<boolean> {
 		if (this.buildId) {
+            console.log('build has id')
 			return this.verifyResponse(await patchBuild(token, this))
 		} else {
 			const newBuildInfo = await createBuild(token, this)
+            console.log(newBuildInfo)
 			if (newBuildInfo) {
 				this.buildId = newBuildInfo.buildId
 				return true

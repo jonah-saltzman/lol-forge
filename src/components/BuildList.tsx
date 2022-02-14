@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, createRef, LegacyRef, useEffect } from "react";
 import { Build } from "../classes/build";
 import { Form } from 'react-bootstrap'
 
@@ -12,6 +12,8 @@ interface ListProps {
 const List = (props: ListProps) => {
     const [buildName, setBuildName] = useState('')
     const [newBuild, setNewBuild] = useState(false)
+    const inputRef = createRef<HTMLInputElement>()
+    const formRef = createRef<HTMLInputElement>()
 
     const nameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setBuildName(e.target.value)
@@ -24,11 +26,22 @@ const List = (props: ListProps) => {
         setBuildName('')
     }
 
+    useEffect(() => {
+        if (!newBuild) return
+        else inputRef.current.focus()
+    })
+
     const nameForm = (
-			<Form onSubmit={changeName}>
+			<Form onBlur={() => {
+                setBuildName('')
+                setNewBuild(false)
+                
+            }} onSubmit={changeName}>
 				<input
+                    ref={inputRef as React.RefObject<HTMLInputElement>}
 					className='input'
 					placeholder='Build Name'
+                    autoFocus
 					value={buildName}
 					onChange={nameChange}
 					onBlur={() => {

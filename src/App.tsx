@@ -68,6 +68,8 @@ const App = () => {
     const addChampStats = (champ: number, stats: OneStat[]): Champ => {
         const newArr = [...champs]
         const i = newArr.findIndex((ele) => ele.champId === champ)
+        console.log('adding stats to ', champ, stats, i)
+        console.log(newArr)
         const newChamp = newArr[i].addStats(stats)
         newArr[i] = newChamp
         setChamps(newArr)
