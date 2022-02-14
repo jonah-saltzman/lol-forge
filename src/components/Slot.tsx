@@ -1,7 +1,6 @@
 import React from "react";
 import { Item } from "../classes/item";
 import { BiArrowBack } from 'react-icons/bi'
-import { icon } from '../helpers'
 
 interface SlotProps {
     item?: Item
