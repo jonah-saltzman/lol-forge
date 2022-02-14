@@ -44,7 +44,6 @@ const changePassword = async (info: ChangePass): Promise<boolean> => {
 
 const signOut = async (token: string): Promise<boolean> => {
     const res = await call('/signout', 'GET', { token })
-    console.log(res.status)
     return true
 }
 

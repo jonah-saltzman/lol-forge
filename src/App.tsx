@@ -6,7 +6,11 @@ import Nav from './Nav'
 import { Champ } from './classes/champ'
 import { Item } from './classes/item'
 import { getChamps, getItems } from './api/info'
-import Main from './components/Main'
+import Builder from './components/Builder'
+import BuildList from './components/BuildList'
+import { Col, Container, Row } from 'react-bootstrap'
+import { Build } from './classes/build'
+import { getAllBuilds } from './api/builds'
 
 export const initialContext: Auth = {
 	loggedIn: false,
@@ -36,6 +40,8 @@ const App = () => {
     const [auth, setAuth] = useState(initialContext)
     const [champs, setChamps] = useState<Champ[]>([])
     const [items, setItems] = useState<Item[]>([])
+    const [builds, setBuilds] = useState<Build[]>([])
+    const [loaded, setLoaded] = useState(false)
 
     const itemNames = () => items.map(item => item.itemName)
     const itemIds = () => items.map(item => item.itemId)
@@ -57,15 +63,42 @@ const App = () => {
         return newItem
     }
 
+    const refreshBuilds = () => {
+        if (!auth.loggedIn) return
+        const champC: ChampContext = { champs, addChampStats, champIds, champNames }
+        const itemC: ItemContext = { items, addItemStats, itemIds, itemNames }
+        getAllBuilds(auth.token).then((infos) => {
+            const newBuilds = infos.map(info => new Build(info, champC, itemC))
+            setBuilds(newBuilds)
+        })
+    }
+
     useEffect(() => {
-        getChamps().then(setChamps).then(getItems).then(setItems)
-        const auth = window.localStorage.getItem('auth')
-        if (auth) {
-            const authData = JSON.parse(auth) as Auth
+        getChamps().then(setChamps).then(getItems).then(setItems).then(loadedAll)
+        const savedAuth = window.localStorage.getItem('auth')
+        if (savedAuth) {
+            const authData = JSON.parse(savedAuth) as Auth
             setAuth(authData)
             toast(`Welcome back, ${authData.email}`)
         }
     },[])
+
+    const loadedAll = () => {
+        setLoaded(true)
+    }
+
+    useEffect(() => {
+        if (!auth.loggedIn || !champs.length || !items.length || !loaded) {
+            setBuilds([])
+        } else {
+            refreshBuilds()
+        }
+    }, [loaded])
+
+    const selectBuild = (id: number) => {
+        return
+    }
+
 	return (
 		<authContext.Provider value={{ auth, setAuth }}>
 			<champContext.Provider
@@ -74,9 +107,16 @@ const App = () => {
 					value={{ items, addItemStats, itemIds, itemNames }}>
 					<ToastContainer />
 					<Nav />
-					<div className='main'>
-						<Main />
-					</div>
+					<Container fluid>
+                        <Row>
+                            <Col xs={12} md={2}>
+                                <BuildList builds={builds} select={selectBuild} />
+                            </Col>
+                            <Col xs={12} md={10}>
+                                <Builder />
+                            </Col>
+                        </Row>
+                    </Container>
 				</itemContext.Provider>
 			</champContext.Provider>
 		</authContext.Provider>

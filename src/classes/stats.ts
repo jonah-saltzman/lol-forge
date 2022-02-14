@@ -111,7 +111,6 @@ export class Stat {
                     this.tenacity = mods
                     break
                 default:
-                    console.log('FAILED TO ADD STAT: ', name)
                     break
             }
         }

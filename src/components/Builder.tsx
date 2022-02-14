@@ -12,8 +12,11 @@ interface ChampItem {
     name: string
 }
 
+interface BuildProps {
+    build?: Build
+}
 
-const Main = () => {
+const Builder = (props: BuildProps) => {
 	const champs = useContext(champContext)
 	const items = useContext(itemContext)
 	const [loading, setLoading] = useState(true)
@@ -48,10 +51,6 @@ const Main = () => {
 		}
 	}, [champs.champs, items.items])
 
-    useEffect(() => {
-        console.log(champList?.length)
-    }, [champList])
-
     const champOptions = loading ? null : champMapper(champList)
 
 	return (
@@ -65,7 +64,6 @@ const Main = () => {
                     formatOptionLabel={ChampSelector}
 					options={champOptions}
 					onInputChange={(val) => {
-						console.log(val)
 						const newArr = matchSorter(champs.champs, val, { keys: ['champName'] })
 						setChampList(newArr)
 					}}
@@ -75,4 +73,4 @@ const Main = () => {
 	)
 }
 
-export default Main
+export default Builder
