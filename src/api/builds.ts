@@ -26,3 +26,7 @@ export const patchBuild = async (token: string, build: Build): Promise<BuildInfo
     if (res.status !== 200) return null
     return await res.json() as BuildInfo
 }
+
+export const deleteBuild = async (token: string, build: Build): Promise<boolean> => {
+    return (await call('/', 'DELETE', {token, buildId: build.buildId})).status === 200
+}

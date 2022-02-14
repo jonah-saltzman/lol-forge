@@ -5,37 +5,67 @@ import Spinner from "./Spinner";
 import Select from "react-select";
 import { Champ } from '../classes/champ'
 import { Build } from '../classes/build'
+import OneBuild from "./OneBuild";
+import { toast } from "react-toastify";
 
 interface ChampItem {
     value: number
     label: string
-    name: string
 }
 
 interface BuildProps {
     build?: Build
+    newChamp: (id: number) => void
 }
 
 const Builder = (props: BuildProps) => {
 	const champs = useContext(champContext)
 	const items = useContext(itemContext)
+    const auth = useContext(authContext)
 	const [loading, setLoading] = useState(true)
 	const [champList, setChampList] = useState<Champ[]>(null)
     const [builds, setBuilds] = useState<Build[]>(null)
+    const [champ, setChamp] = useState<ChampItem>(null)
+
+    useEffect(() => {
+        setChamp(null)
+    }, [auth.auth.loggedIn])
 
     const champMapper = (champs: Champ[]): ChampItem[] => {
         if (!champs.length) return []
 			return champs.map((champ) => ({
 				value: champ.champId,
-				label: champ.champName,
-				name: champ.champName,
+				label: champ.champName
 			}))
 		}
+    
+    const selectChamp = (val: ChampItem) => {
+        setChamp(val)
+    }
+
+    useEffect(() => {
+        if (!champ) return
+        props.newChamp(champ.value)
+        if (props.build && auth.auth.loggedIn) {
+            props.build.changeChamp(champs.champs.find(c => c.champId === champ.value), champs)
+            if (props.build.save(auth.auth.token)) {
+                toast(`Set champion to ${champ.label}`)
+            } else {
+                toast('Error selecting champ')
+            }
+        }
+    }, [champ])
+
+    useEffect(() => {
+        if (!props.build) return
+        const { build: { champ: newChamp } } = props
+        setChamp({ value: newChamp.champId, label: newChamp.champName })
+    }, [props?.build?.champ])
 
     const ChampSelector = (item: ChampItem) => {
         const champ = champs.champs.find(champ => champ.champId === item.value)
 			return (
-				<div className='champ-select'>
+				<div className='champ-li'>
 					<img src={champ.icon} className='small-icon' />
 					<span className='small-name'>{champ.champName}</span>
 				</div>
@@ -57,18 +87,24 @@ const Builder = (props: BuildProps) => {
 		<>
 			<Spinner center={true} show={loading} />
 			{loading ? null : (
-				<Select
-					blurInputOnSelect={false}
-					closeMenuOnSelect={false}
-					closeMenuOnScroll={false}
-                    formatOptionLabel={ChampSelector}
-					options={champOptions}
-					onInputChange={(val) => {
-						const newArr = matchSorter(champs.champs, val, { keys: ['champName'] })
-						setChampList(newArr)
-					}}
-				/>
+				<div className='selectors'>
+					<Select
+						className='champ-select'
+                        value={champ}
+                        onChange={selectChamp}
+						closeMenuOnScroll={false}
+						formatOptionLabel={ChampSelector}
+						options={champOptions}
+						onInputChange={(val) => {
+							const newArr = matchSorter(champs.champs, val, {
+								keys: ['champName'],
+							})
+							setChampList(newArr)
+						}}
+					/>
+				</div>
 			)}
+			<OneBuild build={props.build} />
 		</>
 	)
 }

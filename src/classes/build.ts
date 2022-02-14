@@ -1,4 +1,4 @@
-import { patchBuild, createBuild } from "../api/builds";
+import { patchBuild, createBuild, deleteBuild } from "../api/builds";
 import { getChampStats, getItemStats } from "../api/info";
 import { ChampContext, ItemContext } from "../App";
 import { Champ } from "./champ";
@@ -83,8 +83,17 @@ export class Build {
         if (this.buildId) {
             return this.verifyResponse(await patchBuild(token, this))
         } else {
-            return this.verifyResponse(await createBuild(token, this))
+            const newBuildInfo = await createBuild(token, this)
+            if (newBuildInfo) {
+                this.buildId = newBuildInfo.buildId
+                return true
+            } else {
+                return false
+            }
         }
+    }
+    async delete(token: string): Promise<boolean> {
+        return await deleteBuild(token, this)
     }
     toObject(): BuildPost {
         return {

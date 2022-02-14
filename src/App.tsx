@@ -42,6 +42,8 @@ const App = () => {
     const [items, setItems] = useState<Item[]>([])
     const [builds, setBuilds] = useState<Build[]>([])
     const [loaded, setLoaded] = useState(false)
+    const [selected, setSelected] = useState<Build>(null)
+    const [selectedChamp, setSelectedChamp] = useState<Champ>(null)
 
     const itemNames = () => items.map(item => item.itemName)
     const itemIds = () => items.map(item => item.itemId)
@@ -63,13 +65,27 @@ const App = () => {
         return newItem
     }
 
-    const refreshBuilds = () => {
+    const selectChamp = (id: number) => {
+        console.log('selecting champ', id)
+        setSelectedChamp(champs.find(champ => champ.champId === id))
+    }
+
+    const refreshBuilds = (selected?: number) => {
         if (!auth.loggedIn) return
         const champC: ChampContext = { champs, addChampStats, champIds, champNames }
         const itemC: ItemContext = { items, addItemStats, itemIds, itemNames }
         getAllBuilds(auth.token).then((infos) => {
             const newBuilds = infos.map(info => new Build(info, champC, itemC))
             setBuilds(newBuilds)
+        }).then(() => {
+            if (selected) {
+                const found = builds.find((build) => build.buildId === selected)
+                if (!found) toast('Unknown error creating build')
+                else {
+                    toast(`Created build ${found.buildName}`)
+                    setSelected(found)
+                }
+            }
         })
     }
 
@@ -96,8 +112,35 @@ const App = () => {
     }, [loaded])
 
     const selectBuild = (id: number) => {
-        return
+        const found = builds.find((build) => build.buildId === id)
+        setSelected(found)
     }
+
+    // export interface BuildInfo {
+	// 		buildName?: string
+	// 		buildId?: number
+	// 		champId: number
+	// 		champStats: OneStat[]
+	// 		items: ItemInfo[]
+	// 	}
+    const newBuild = async (name: string) => {
+        const champC: ChampContext = { champs, addChampStats, champIds, champNames }
+        const itemC: ItemContext = { items, addItemStats, itemIds, itemNames }
+        const newBuild = new Build({items: [], buildName: name, champId: selectedChamp.champId, champStats: [] }, champC, itemC, selectedChamp, [])
+        if (auth.loggedIn) {
+            if (await newBuild.save(auth.token)) {
+                refreshBuilds(newBuild.buildId)
+            }
+        }
+    }
+
+    useEffect(() => {
+        if (!auth.loggedIn) {
+            setBuilds([])
+            setSelected(null)
+            setSelectedChamp(null)
+        }
+    }, [auth.loggedIn])
 
 	return (
 		<authContext.Provider value={{ auth, setAuth }}>
@@ -110,10 +153,10 @@ const App = () => {
 					<Container fluid>
                         <Row>
                             <Col xs={12} md={2}>
-                                <BuildList builds={builds} select={selectBuild} />
+                                <BuildList addBuild={newBuild} builds={builds} select={selectBuild} />
                             </Col>
-                            <Col xs={12} md={10}>
-                                <Builder />
+                            <Col className='main-col' xs={12} md={10}>
+                                <Builder build={selected} newChamp={selectChamp} />
                             </Col>
                         </Row>
                     </Container>

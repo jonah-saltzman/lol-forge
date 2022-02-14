@@ -230,3 +230,72 @@ textarea:-moz-placeholder {
 .build-li:hover {
     text-decoration: underline;
 }
+
+.slot {
+    min-width: 100px;
+    min-height: 100px;
+    border-radius: 10px;
+    background-color: #5d80bdd3;
+    border-color: #5d2b0ad3;
+    margin: 0 0.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.large-icon {
+    padding: 1rem;
+    padding-bottom: 0.4rem;
+}
+
+.arrows {
+    display: flex;
+    justify-content: space-evenly;
+    padding-bottom: 0.5rem;
+}
+
+.tray {
+    margin-top: 3rem;
+    display: inline-flex;
+    justify-content: center;
+    background-color: rgba(0, 36, 136, 0.719);
+    padding: 1rem;
+    border-radius: 1rem;
+}
+
+.champ-select {
+    width: 50%;
+    margin-top: 2rem;
+    width: 20rem;
+    height: 2rem;
+}
+
+.small-icon {
+    max-width: 3rem;
+}
+
+.small-name {
+    margin-left: 1rem;
+    font-size: 1.5rem;
+    text-justify: distribute;
+}
+
+.main-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.right {
+    transform: rotatey(180deg);
+}
+
+.champ-li {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.new-build {
+    text-decoration: underline;
+    cursor: pointer;
+}
