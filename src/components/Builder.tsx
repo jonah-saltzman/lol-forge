@@ -8,6 +8,7 @@ import { Item } from "../classes/item";
 import OneBuild from "./OneBuild";
 import { toast } from "react-toastify";
 import Slot from './Slot'
+import useBuild from "../hooks/useBuild";
 
 interface ListItem {
     value: number
@@ -38,7 +39,7 @@ const Builder = (props: BuildProps) => {
 	const champs = useContext(champContext)
 	const items = useContext(itemContext)
     const auth = useContext(authContext)
-    const {selectedBuild, setSelectedBuild} = useContext(buildContext)
+    const {selectedBuild, modifyBuild, selectBuild} = useBuild()
 	const [loading, setLoading] = useState(true)
 	const [champList, setChampList] = useState<Champ[]>(null)
     const [itemList, setItemList] = useState<Item[]>(null)
@@ -48,12 +49,15 @@ const Builder = (props: BuildProps) => {
 
     useEffect(() => {
         if (!selectedBuild || !selectedBuild.items) return
+        console.log('new selected build: ', selectedBuild.buildId)
         if (selectedBuild && selectedBuild.items.length) {
             console.log('updating tray')
             console.log(selectedBuild.items)
             if (slotJsx.every((jsx, i) => jsx.item.itemId === selectedBuild.items[i].itemId)) {
+                console.log('all items same')
                 return
             } else {
+                console.log('new tray')
                 const newArray = initialJsx.map((j, i) => {
                     const item = selectedBuild.items[i]
                     if (!j.item) return {pos: i, item: item, jsx: genJsx(item, i)}
@@ -62,6 +66,7 @@ const Builder = (props: BuildProps) => {
                 setSlotJsx(newArray)
             }
         }
+        props.newChamp(selectedBuild.champ.champId)
     }, [selectedBuild])
 
     useEffect(() => {
@@ -94,7 +99,7 @@ const Builder = (props: BuildProps) => {
                 champs.champs.find((c) => c.champId === val.value),
                 champs,
                 items
-            ).then((newBuild) => setSelectedBuild(newBuild.buildId))
+            ).then(modifyBuild)
         }
     }
 

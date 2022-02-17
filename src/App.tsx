@@ -31,8 +31,9 @@ export interface ItemContext {
 }
 
 export interface BuildContext {
-    selectedBuild: Build
-    setSelectedBuild: (buildId: number) => void
+	selectedBuild: Build
+	setSelectedBuild: (buildId: number) => void
+	modifySelectedBuild: (build: Build) => void
 }
 
 export const authContext = createContext<AuthContext | null>(null)
@@ -69,6 +70,19 @@ const App = () => {
         }
     }
 
+    const modifySelectedBuild = (build: Build) => {
+        if (auth.loggedIn && builds.length) {
+            const index = builds.findIndex(ele => ele.buildId === build.buildId)
+            if (index !== -1) {
+                const newArray = [...builds]
+                newArray[index] = build
+                setBuilds(newArray)
+            } else throw new Error('could not find modified build')
+        } else {
+            setBuild(build)
+        }
+    }
+
     const itemNames = () => items.map(item => item.itemName)
     const itemIds = () => items.map(item => item.itemId)
     const champNames = () => champs.map(champ => champ.champName)
@@ -90,6 +104,7 @@ const App = () => {
     }
 
     const selectChamp = (id: number) => {
+        console.log('selecting champ: ', id)
         setSelectedChamp(champs.find(champ => champ.champId === id))
     }
 
@@ -152,6 +167,8 @@ const App = () => {
             toast('Select a champ to create a build')
             return
         }
+        console.log('creating build from champ: ')
+        console.log(selectedChamp)
         const newBuild = new Build({items: [], buildName: name, champId: selectedChamp.champId, champStats: [] }, champC, itemC, selectedChamp, [])
         if (auth.loggedIn) {
             if (await newBuild.save(auth.token)) {
@@ -178,7 +195,7 @@ const App = () => {
 					<Nav />
 					<Container fluid>
 						<Row>
-							<buildContext.Provider value={{selectedBuild, setSelectedBuild}}>
+							<buildContext.Provider value={{selectedBuild, setSelectedBuild, modifySelectedBuild}}>
 								{auth.loggedIn ? (
 									<Col xs={12} md={1}>
 										<BuildList
