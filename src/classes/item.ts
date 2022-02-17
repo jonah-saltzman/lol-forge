@@ -13,12 +13,16 @@ export class Item extends Stat implements ItemInfo {
     from: Item[]
     into: Item[]
     hasStats: boolean
+    stats: OneStat[]
 	constructor(info: ItemInfo, stats?: OneStat[]) {
 		super(stats || [])
 		this.itemId = info.itemId
 		this.itemName = info.itemName
 		this.icon = info.icon
         this.hasStats = (stats !== undefined)
+        if (stats) {
+            this.stats = stats
+        }
 	}
 	addStats(stats: OneStat[]) {
 		const info: ItemInfo = {

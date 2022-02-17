@@ -32,6 +32,7 @@ export class Build {
 	items: Item[]
 	buildId?: number
 	saved: boolean
+    previousInfo: BuildInfo
 	constructor(
 		info: BuildInfo,
 		champC: ChampContext,
@@ -49,6 +50,7 @@ export class Build {
 					return itemC.addItemStats(item.itemId, item.stats)
 			  }) && ([] as Item[])
 		this.buildId = info.buildId
+        this.previousInfo = this.getBuildInfo()
 	}
 	public static async create(
 		buildName: string,
@@ -90,9 +92,17 @@ export class Build {
 	}
 	async save(token: string): Promise<boolean> {
 		if (this.buildId) {
-            console.log('build has id')
-			return this.verifyResponse(await patchBuild(token, this))
+            const need = this.needSave()
+            console.log('needtosave: ', need)
+            console.log('saving build with id')
+            if (!this.needSave()) return true
+            const patchResult = await patchBuild(token, this)
+            console.log(patchResult)
+            const verify = (this.verifyResponse(patchResult))
+            console.log('verify: ', verify)
+			return this.verifyResponse(patchResult)
 		} else {
+            console.log('saving new build')
 			const newBuildInfo = await createBuild(token, this)
             console.log(newBuildInfo)
 			if (newBuildInfo) {
@@ -115,17 +125,7 @@ export class Build {
 		}
 	}
 	verifyResponse(res: BuildInfo): boolean {
-		if (this.buildId && this.buildId !== res.buildId) return false
-		if (this.buildName && this.buildName !== res.buildName) return false
-		if (this.champ.champId !== res.champId) return false
-		if (
-			!this.items.every((item) =>
-				res.items.some((info) => info.itemId === item.itemId)
-			)
-		)
-			return false
-		if (this.items.length !== res.items.length) return false
-		return true
+        return this.needSave(res)
 	}
 	public static async fromChamp(
 		champ: Champ,
@@ -142,5 +142,41 @@ export class Build {
 		}
 		return new Build(info, champC, itemC, champ)
 	}
-    
+    getBuildInfo(): BuildInfo {
+        const itemInfos: ItemInfo[] = this.items.map((item) => ({
+            itemId: item.itemId,
+            from: item.from.map((from) => from.itemId),
+            into: item.into.map((into) => into.itemId),
+            stats: item.stats,
+        }))
+        return {
+            buildName: this.buildName,
+            buildId: this.buildId,
+            champId: this.champ.champId,
+            champStats: this.champ.statsArr,
+            items: itemInfos
+        }
+    }
+    needSave(info?: BuildInfo): boolean {
+        const current = info ? info : this.getBuildInfo()
+        return (this.previousInfo.buildName !== current.buildName)
+            || (this.previousInfo.champId !== current.champId)
+            || (this.previousInfo.items.length !== current.items.length)
+            || (current.items.some((currentItem, i) => currentItem.itemId !== this.previousInfo.items[i].itemId))
+    }
 }
+
+// export type ItemInfo = {
+// 	itemId: number
+// 	from: number[]
+// 	into: number[]
+// 	stats: OneStat[]
+// }
+
+// export interface BuildInfo {
+// 	buildName?: string
+// 	buildId?: number
+// 	champId: number
+// 	champStats: OneStat[]
+// 	items: ItemInfo[]
+// }

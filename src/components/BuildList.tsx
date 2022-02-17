@@ -1,19 +1,18 @@
-import React, { useState, createRef, LegacyRef, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Build } from "../classes/build";
 import { Form } from 'react-bootstrap'
+import { buildContext } from '../App'
 
 interface ListProps {
     builds: Build[]
-    select: (id?: number) => void
     addBuild: (name: string) => void
     authed: boolean
 }
 
 const List = (props: ListProps) => {
+    const {selectedBuild, setSelectedBuild} = useContext(buildContext)
     const [buildName, setBuildName] = useState('')
     const [newBuild, setNewBuild] = useState(false)
-    const inputRef = createRef<HTMLInputElement>()
-    const formRef = createRef<HTMLInputElement>()
 
     const nameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setBuildName(e.target.value)
@@ -26,11 +25,6 @@ const List = (props: ListProps) => {
         setBuildName('')
     }
 
-    useEffect(() => {
-        if (!newBuild) return
-        else inputRef.current.focus()
-    })
-
     const nameForm = (
 			<Form onBlur={() => {
                 setBuildName('')
@@ -38,7 +32,6 @@ const List = (props: ListProps) => {
                 
             }} onSubmit={changeName}>
 				<input
-                    ref={inputRef as React.RefObject<HTMLInputElement>}
 					className='input'
 					placeholder='Build Name'
                     autoFocus
@@ -60,8 +53,8 @@ const List = (props: ListProps) => {
 					? props.builds.map((build, i) => (
 							<div
 								key={i}
-								onClick={() => props.select(build.buildId)}
-								className='build-li'>
+								onClick={() => {setSelectedBuild(build.buildId)}}
+								className={'build-li ' + (selectedBuild ? (selectedBuild.buildId === build.buildId ? 'selected-build' : null) : null)}>
 								{build.buildName}
 							</div>
 					  ))

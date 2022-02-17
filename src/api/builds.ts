@@ -24,7 +24,7 @@ export const createBuild = async (token: string, build: Build): Promise<BuildInf
 export const patchBuild = async (token: string, build: Build): Promise<BuildInfo> => {
     const res = await call('/', 'PATCH', {token, ...build.toObject()})
     if (res.status !== 200) return null
-    return await res.json() as BuildInfo
+    return (await res.json()).data as BuildInfo
 }
 
 export const deleteBuild = async (token: string, build: Build): Promise<boolean> => {

@@ -17,6 +17,7 @@ interface ListItem {
 
 interface BuildProps {
     newChamp: (id: number) => void
+    updateBuild: (build: Build) => void
 }
 
 const search = createFilter({ ignoreCase: true, matchFrom: 'start' })
@@ -93,7 +94,7 @@ const Builder = (props: BuildProps) => {
                 champs.champs.find((c) => c.champId === val.value),
                 champs,
                 items
-            ).then(setSelectedBuild)
+            ).then((newBuild) => setSelectedBuild(newBuild.buildId))
         }
     }
 
@@ -103,20 +104,21 @@ const Builder = (props: BuildProps) => {
         if (selectedBuild.items.length >= 6) return
         selectedBuild.items.push(items.items.find((i) => i.itemId === val.value))
         if (auth.auth.loggedIn) await selectedBuild.save(auth.auth.token)
-        setSelectedBuild(selectedBuild)
+        props.updateBuild(selectedBuild)
     }
 
     useEffect(() => {
         if (!champ) return
+        if (selectedBuild && champ.value === selectedBuild.champ.champId) return
         props.newChamp(champ.value)
         if (selectedBuild && auth.auth.loggedIn) {
             selectedBuild
-							.changeChamp(
-								champs.champs.find((c) => c.champId === champ.value),
-								champs
-							)
-							.then(() => selectedBuild.save(auth.auth.token))
-                            .then(bool => {if (!bool) toast('Error selecting champ')})
+                .changeChamp(
+                    champs.champs.find((c) => c.champId === champ.value),
+                    champs
+                )
+                .then(() => selectedBuild.save(auth.auth.token))
+                .then(bool => {if (!bool) toast('Error selecting champ')})
         }
     }, [champ])
 
