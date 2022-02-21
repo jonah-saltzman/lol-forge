@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Build } from "../classes/build";
 import { Form } from 'react-bootstrap'
-import { buildContext } from '../App'
+import { buildContext } from '../hooks/context/createContext'
 
 interface ListProps {
     builds: Build[]
@@ -10,7 +10,7 @@ interface ListProps {
 }
 
 const List = (props: ListProps) => {
-    const {selectedBuild, setSelectedBuild} = useContext(buildContext)
+    const {selected, dispatch} = useContext(buildContext)
     const [buildName, setBuildName] = useState('')
     const [newBuild, setNewBuild] = useState(false)
 
@@ -53,8 +53,8 @@ const List = (props: ListProps) => {
 					? props.builds.map((build, i) => (
 							<div
 								key={i}
-								onClick={() => {setSelectedBuild(build.buildId)}}
-								className={'build-li ' + (selectedBuild ? (selectedBuild.buildId === build.buildId ? 'selected-build' : null) : null)}>
+								onClick={() => dispatch({ type: Actions.Swap, build: build })}
+								className={'build-li ' + (selected ? (selected.buildId === build.buildId ? 'selected-build' : null) : null)}>
 								{build.buildName}
 							</div>
 					  ))
