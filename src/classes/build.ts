@@ -1,30 +1,8 @@
 import { patchBuild, createBuild, deleteBuild } from "../api/builds";
 import { getChampStats, getItemStats } from "../api/info";
-import { ChampContext, ItemContext } from "../App";
+import { champContext, itemContext } from "../hooks/context/createContext";
 import { Champ } from "./champ";
 import { Item } from "./item";
-
-export type ItemInfo = {
-    itemId: number,
-    from: number[],
-    into: number[],
-    stats: OneStat[]
-}
-
-export interface BuildInfo {
-    buildName?: string
-    buildId?: number
-    champId: number
-    champStats: OneStat[]
-    items: ItemInfo[]
-}
-
-export interface BuildPost {
-	buildId?: number
-	champId: number
-	items: number[]
-	buildName?: string
-}
 
 export class Build {
 	buildName?: string
@@ -34,12 +12,22 @@ export class Build {
 	saved: boolean
     previousInfo: BuildInfo
 	constructor(
-		info: BuildInfo,
-		champC: ChampContext,
-		itemC: ItemContext,
+		info?: BuildInfo,
+		champC?: ChampContext,
+		itemC?: ItemContext,
 		champ?: Champ,
-		items?: Item[]
+		items?: Item[],
+        build?: Build
 	) {
+        if (build) {
+            this.buildName = build.buildName
+            this.champ = build.champ
+            this.items = build.items
+            this.buildId = build.buildId
+            this.saved = false
+            this.previousInfo = this.getBuildInfo()
+            return
+        }
 		this.buildName = info.buildName
 		this.champ = champ
 			? champ
@@ -80,14 +68,14 @@ export class Build {
 		const newBuild = new Build(info, champC, itemC, addChamp, addItems)
 		return newBuild
 	}
-	async changeChamp(newChamp: Champ, champC: ChampContext): Promise<void> {
+	async changeChamp(newChamp: Champ, champC: ChampContext): Promise<Build> {
 		if (newChamp.hasStats) {
 			this.champ = newChamp
-			return
+			return this
 		} else {
 			const stats = await getChampStats(newChamp.champId)
 			this.champ = champC.addChampStats(newChamp.champId, stats)
-			return
+			return this
 		}
 	}
 	async save(token: string): Promise<boolean> {
@@ -164,7 +152,53 @@ export class Build {
             || (this.previousInfo.items.length !== current.items.length)
             || (current.items.some((currentItem, i) => currentItem.itemId !== this.previousInfo.items[i].itemId))
     }
+    public static clone(build: Build): Build {
+        return new Build(undefined, undefined, undefined, undefined, undefined, build)
+    }
+    reduce(action: BuildAction): Build {
+        switch(action.type) {
+            case Actions.ChangeName:
+                this.buildName = action.newName
+                return Build.clone(this)
+            case Actions.AddBuildId:
+                this.buildId = action.buildId
+                return Build.clone(this)
+            case Actions.ChangeChamp:
+                this.champ = action.newChamp
+                return Build.clone(this)
+            case Actions.PushItem:
+                if (this.items.length >= 6) return this
+                this.items.push(action.item)
+                return Build.clone(this)
+            case Actions.MoveItem:
+                const currentPos = this.items.findIndex(i => i.itemId === action.payload.itemId)
+                if (currentPos === -1) return this
+                if (this.items[action.payload.newPosition]) {
+                    const temp = this.items[action.payload.newPosition]
+                    this.items[action.payload.newPosition] = this.items[currentPos]
+                    this.items[currentPos] = temp
+                    return Build.clone(this)
+                } else {
+                    this.items[action.payload.newPosition] = this.items[currentPos]
+                    return Build.clone(this)
+                }
+            case Actions.PopItem:
+                if (isPopById(action.payload)) {
+                    this.items = this.items.filter(i => i.itemId !== action.payload.itemId)
+                } else if (isPopByPos(action.payload)) {
+                    this.items.splice(action.payload.position, 1)
+                }
+                return Build.clone(this)
+            case Actions.Swap:
+                return Build.clone(action.build)
+            default:
+                return this
+        }
+    }
 }
+
+const isPopById = (payload: PopItem): payload is PopItemById => !!payload.itemId
+const isPopByPos = (payload: PopItem): payload is PopItemByPos => !!payload.position
 
 // export type ItemInfo = {
 // 	itemId: number

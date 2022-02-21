@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useContext} from "react";
-import { champContext, itemContext, authContext, buildContext } from "../App";
+import * as context from '../hooks/context/createContext';
 import Spinner from "./Spinner";
 import Select, {createFilter} from "react-select";
 import { Champ } from '../classes/champ'
@@ -18,7 +18,6 @@ interface ListItem {
 
 interface BuildProps {
     newChamp: (id: number) => void
-    updateBuild: (build: Build) => void
 }
 
 const search = createFilter({ ignoreCase: true, matchFrom: 'start' })
@@ -36,10 +35,10 @@ const initialJsx = [0, 1, 2, 3, 4, 5].map(i => ({pos: i, jsx: <Slot i={i} key={i
 const genJsx = (item: Item, i: number) => <Slot i={i} key={item.itemId + 1} item={item} />
 
 const Builder = (props: BuildProps) => {
-	const champs = useContext(champContext)
-	const items = useContext(itemContext)
-    const auth = useContext(authContext)
-    const {selectedBuild, modifyBuild, selectBuild} = useBuild()
+	const champs = useContext(context.champContext)
+	const items = useContext(context.itemContext)
+    const auth = useContext(context.authContext)
+    const {selected: selectedBuild, dispatch} = useContext(context.buildContext)
 	const [loading, setLoading] = useState(true)
 	const [champList, setChampList] = useState<Champ[]>(null)
     const [itemList, setItemList] = useState<Item[]>(null)
@@ -99,7 +98,9 @@ const Builder = (props: BuildProps) => {
                 champs.champs.find((c) => c.champId === val.value),
                 champs,
                 items
-            ).then(modifyBuild)
+            ).then((build) => {
+                dispatch({type: Actions.Swap, build: build})
+            })
         }
     }
 
@@ -107,9 +108,11 @@ const Builder = (props: BuildProps) => {
         setItem(null)
         if (!selectedBuild) return toast('Select a champion to begin')
         if (selectedBuild.items.length >= 6) return
-        selectedBuild.items.push(items.items.find((i) => i.itemId === val.value))
-        if (auth.auth.loggedIn) await selectedBuild.save(auth.auth.token)
-        props.updateBuild(selectedBuild)
+        dispatch({
+					type: Actions.PushItem,
+					item: items.items.find((i) => i.itemId === val.value),
+				})
+        // if (auth.auth.loggedIn) await selectedBuild.save(auth.auth.token)
     }
 
     useEffect(() => {

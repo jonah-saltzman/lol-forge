@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect} from 'react'
+import React, { createContext, useState, useEffect, useReducer} from 'react'
 import { toast, ToastContainer } from 'react-toastify'
 import Nav from './Nav'
 import { Champ } from './classes/champ'
@@ -9,6 +9,8 @@ import BuildList from './components/BuildList'
 import { Col, Container, Row } from 'react-bootstrap'
 import { Build } from './classes/build'
 import { getAllBuilds } from './api/builds'
+import * as context from './hooks/context/createContext'
+import buildReducer from './hooks/context/buildReducer'
 
 export const initialContext: Auth = {
 	loggedIn: false,
@@ -16,45 +18,15 @@ export const initialContext: Auth = {
 	token: null,
 }
 
-export interface ChampContext {
-    champs: Champ[]
-    addChampStats: (champ: number, stats: OneStat[]) => Champ
-    champNames: () => string[]
-    champIds: () => number[]
-}
-
-export interface ItemContext {
-    items: Item[]
-    addItemStats: (item: number, stats: OneStat[]) => Item
-    itemNames: () => string[]
-    itemIds: () => number[]
-}
-
-export interface BuildContext {
-	selectedBuild: Build
-	setSelectedBuild: (buildId: number) => void
-	modifySelectedBuild: (build: Build) => void
-}
-
-export const authContext = createContext<AuthContext | null>(null)
-export const champContext = createContext<ChampContext | null>(null)
-export const itemContext = createContext<ItemContext | null>(null)
-export const buildContext = createContext<BuildContext | null>(null)
-
 const App = () => {
     const [auth, setAuth] = useState(initialContext)
     const [champs, setChamps] = useState<Champ[]>([])
     const [items, setItems] = useState<Item[]>([])
     const [builds, setBuilds] = useState<Build[]>([])
     const [loaded, setLoaded] = useState(false)
-    const [selectedBuild, setBuild] = useState<Build>(null)
+    const [build, dispatch] = useReducer(buildReducer, null)
     const [selectedChamp, setSelectedChamp] = useState<Champ>(null)
     const [refresh, setRefresh] = useState(false)
-
-    const updateBuild = (build: Build) => {
-        console.log('setting new build')
-        setBuild(build)
-    }
 
     const guestBuild = (build: Build) => {
         //setSelectedBuild(build)
@@ -66,20 +38,7 @@ const App = () => {
         if (!found) {
             refreshBuilds(buildId)
         } else {
-            setBuild(found)
-        }
-    }
-
-    const modifySelectedBuild = (build: Build) => {
-        if (auth.loggedIn && builds.length) {
-            const index = builds.findIndex(ele => ele.buildId === build.buildId)
-            if (index !== -1) {
-                const newArray = [...builds]
-                newArray[index] = build
-                setBuilds(newArray)
-            } else throw new Error('could not find modified build')
-        } else {
-            setBuild(build)
+            dispatch({type: Actions.Swap, build: found})
         }
     }
 
@@ -186,16 +145,17 @@ const App = () => {
     }, [auth.loggedIn])
 
 	return (
-		<authContext.Provider value={{ auth, setAuth }}>
-			<champContext.Provider
+		<context.authContext.Provider value={{ auth, setAuth }}>
+			<context.champContext.Provider
 				value={{ champs, addChampStats, champIds, champNames }}>
-				<itemContext.Provider
+				<context.itemContext.Provider
 					value={{ items, addItemStats, itemIds, itemNames }}>
 					<ToastContainer />
 					<Nav />
 					<Container fluid>
 						<Row>
-							<buildContext.Provider value={{selectedBuild, setSelectedBuild, modifySelectedBuild}}>
+							<context.buildContext.Provider
+								value={{ selected: build, dispatch }}>
 								{auth.loggedIn ? (
 									<Col xs={12} md={1}>
 										<BuildList
@@ -206,17 +166,14 @@ const App = () => {
 									</Col>
 								) : null}
 								<Col className='main-col' xs={12} md={auth.loggedIn ? 11 : 12}>
-									<Builder
-										newChamp={selectChamp}
-                                        updateBuild={updateBuild}
-									/>
+									<Builder newChamp={selectChamp} />
 								</Col>
-							</buildContext.Provider>
+							</context.buildContext.Provider>
 						</Row>
 					</Container>
-				</itemContext.Provider>
-			</champContext.Provider>
-		</authContext.Provider>
+				</context.itemContext.Provider>
+			</context.champContext.Provider>
+		</context.authContext.Provider>
 	)   
 }
 
