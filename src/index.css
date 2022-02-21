@@ -306,3 +306,10 @@ textarea:-moz-placeholder {
     text-decoration: underline;
     cursor: pointer;
 }
+
+.list-spinner {
+    position: absolute;
+    left: 10rem;
+    top: 20rem;
+    color: #3f5baa;
+}

@@ -11,6 +11,7 @@ import { Build } from './classes/build'
 import { getAllBuilds } from './api/builds'
 import * as context from './hooks/context/createContext'
 import buildReducer from './hooks/context/buildReducer'
+import { Actions } from './declarations/enums'
 
 export const initialContext: Auth = {
 	loggedIn: false,
@@ -27,6 +28,7 @@ const App = () => {
     const [build, dispatch] = useReducer(buildReducer, null)
     const [selectedChamp, setSelectedChamp] = useState<Champ>(null)
     const [refresh, setRefresh] = useState(false)
+    const [loading, setLoading] = useState(true)
 
     const guestBuild = (build: Build) => {
         //setSelectedBuild(build)
@@ -41,6 +43,25 @@ const App = () => {
             dispatch({type: Actions.Swap, build: found})
         }
     }
+
+    useEffect(() => {
+        if (!build) return
+        const listIndex = builds.findIndex(b => b.buildId === build.buildId)
+        if (listIndex === -1) {
+            console.log('build not in list?')
+        } else {
+            console.log('array champ: ', builds[listIndex].champ.champName)
+            console.log('state champ: ', build.champ.champName)
+            if (build.updateHash().hash !== builds[listIndex].updateHash().hash) {
+                console.log('hashes are different, updaing array')
+                const newArray = [...builds]
+                newArray[listIndex] = build
+                setBuilds(newArray)
+            } else {
+                console.log('build hashes matched, not updating array')
+            }
+        }
+    }, [build])
 
     const itemNames = () => items.map(item => item.itemName)
     const itemIds = () => items.map(item => item.itemId)
@@ -63,12 +84,17 @@ const App = () => {
     }
 
     const selectChamp = (id: number) => {
-        console.log('selecting champ: ', id)
-        setSelectedChamp(champs.find(champ => champ.champId === id))
+        const newChamp = champs.find(champ => champ.champId === id)
+        setSelectedChamp(newChamp)
+        if (build) {
+            if (build.champ.champId === newChamp.champId) return
+            dispatch({type: Actions.ChangeChamp, newChamp })
+        }
     }
 
     const refreshBuilds = (selected?: number) => {
         if (!auth.loggedIn) return
+        setLoading(true)
         const champC: ChampContext = { champs, addChampStats, champIds, champNames }
         const itemC: ItemContext = { items, addItemStats, itemIds, itemNames }
         getAllBuilds(auth.token).then((infos) => {
@@ -83,6 +109,7 @@ const App = () => {
                     setSelectedBuild(selected)
                 }
             }
+            setLoading(false)
         })
     }
 
@@ -126,8 +153,6 @@ const App = () => {
             toast('Select a champ to create a build')
             return
         }
-        console.log('creating build from champ: ')
-        console.log(selectedChamp)
         const newBuild = new Build({items: [], buildName: name, champId: selectedChamp.champId, champStats: [] }, champC, itemC, selectedChamp, [])
         if (auth.loggedIn) {
             if (await newBuild.save(auth.token)) {
@@ -157,11 +182,12 @@ const App = () => {
 							<context.buildContext.Provider
 								value={{ selected: build, dispatch }}>
 								{auth.loggedIn ? (
-									<Col xs={12} md={1}>
+									<Col className='overflow-visible' xs={12} md={1}>
 										<BuildList
 											authed={auth.loggedIn}
 											addBuild={newBuild}
 											builds={builds}
+                                            loading={loading}
 										/>
 									</Col>
 								) : null}

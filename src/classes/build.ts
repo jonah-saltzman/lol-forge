@@ -3,6 +3,8 @@ import { getChampStats, getItemStats } from "../api/info";
 import { champContext, itemContext } from "../hooks/context/createContext";
 import { Champ } from "./champ";
 import { Item } from "./item";
+import { Actions } from "../declarations/enums";
+import { hash } from "../hash";
 
 export class Build {
 	buildName?: string
@@ -11,6 +13,7 @@ export class Build {
 	buildId?: number
 	saved: boolean
     previousInfo: BuildInfo
+    hash: number
 	constructor(
 		info?: BuildInfo,
 		champC?: ChampContext,
@@ -26,6 +29,7 @@ export class Build {
             this.buildId = build.buildId
             this.saved = false
             this.previousInfo = this.getBuildInfo()
+            this.hash = this.currentHash()
             return
         }
 		this.buildName = info.buildName
@@ -81,18 +85,12 @@ export class Build {
 	async save(token: string): Promise<boolean> {
 		if (this.buildId) {
             const need = this.needSave()
-            console.log('needtosave: ', need)
-            console.log('saving build with id')
             if (!this.needSave()) return true
             const patchResult = await patchBuild(token, this)
-            console.log(patchResult)
             const verify = (this.verifyResponse(patchResult))
-            console.log('verify: ', verify)
 			return this.verifyResponse(patchResult)
 		} else {
-            console.log('saving new build')
 			const newBuildInfo = await createBuild(token, this)
-            console.log(newBuildInfo)
 			if (newBuildInfo) {
 				this.buildId = newBuildInfo.buildId
 				return true
@@ -194,6 +192,13 @@ export class Build {
             default:
                 return this
         }
+    }
+    currentHash(): number {
+        return hash(JSON.stringify(this.getBuildInfo()))
+    }
+    updateHash(): Build {
+        this.hash = this.currentHash()
+        return this
     }
 }
 

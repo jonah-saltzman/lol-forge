@@ -2,12 +2,8 @@ import React, { useState, useEffect, useContext } from "react";
 import { Build } from "../classes/build";
 import { Form } from 'react-bootstrap'
 import { buildContext } from '../hooks/context/createContext'
-
-interface ListProps {
-    builds: Build[]
-    addBuild: (name: string) => void
-    authed: boolean
-}
+import { Actions } from "../declarations/enums";
+import {Spinner} from "react-bootstrap";
 
 const List = (props: ListProps) => {
     const {selected, dispatch} = useContext(buildContext)
@@ -45,30 +41,48 @@ const List = (props: ListProps) => {
 			</Form>
 		)
 
-    const newBuildLi = (<span className="new-build">New Build</span>)
+    const selectBuild = (build: Build) => {
+        dispatch({ type: Actions.Swap, build: build })
+    }
 
-    return (
-			<div className='build-ul'>
-				{props.builds
-					? props.builds.map((build, i) => (
+    const newBuildLi = (<span className="new-build">New Build</span>)
+    if (props.loading) {
+        return (
+            <Spinner animation='border' className="list-spinner" />
+        )
+    } else {
+        return (
+					<div className='build-ul'>
+						{props.builds
+							? props.builds.map((build, i) => (
+									<div
+										key={i}
+										onClick={() => {
+											selectBuild(build)
+										}}
+										className={
+											'build-li ' +
+											(selected
+												? selected.buildId === build.buildId
+													? 'selected-build'
+													: null
+												: null)
+										}>
+										{build.buildName}
+									</div>
+							  ))
+							: null}
+						{props.authed ? (
 							<div
-								key={i}
-								onClick={() => dispatch({ type: Actions.Swap, build: build })}
-								className={'build-li ' + (selected ? (selected.buildId === build.buildId ? 'selected-build' : null) : null)}>
-								{build.buildName}
+								key={props.builds.length + 1 && -1}
+								onClick={() => setNewBuild(true)}
+								className='build-li'>
+								{newBuild ? nameForm : newBuildLi}
 							</div>
-					  ))
-					: null}
-				{props.authed ? (
-					<div
-						key={props.builds.length + 1 && -1}
-						onClick={() => setNewBuild(true)}
-						className='build-li'>
-						{newBuild ? nameForm : newBuildLi}
+						) : null}
 					</div>
-				) : null}
-			</div>
-		)
+				)
+    }
 }
 
 export default List

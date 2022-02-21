@@ -1,7 +1,8 @@
 import React, { createRef, FormEventHandler, useContext, useEffect, useState } from "react";
 import api from "./api/auth";
 import { toast } from "react-toastify";
-import { authContext, initialContext } from "./App";
+import { authContext } from "./hooks/context/createContext";
+import { initialContext } from "./App";
 import {
     Button,
 	Navbar,

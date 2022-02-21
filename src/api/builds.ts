@@ -1,6 +1,6 @@
 import call from "./caller";
 
-import { BuildInfo, Build } from "../classes/build";
+import { Build } from "../classes/build";
 
 interface BuildResponse {
     data: BuildInfo[]

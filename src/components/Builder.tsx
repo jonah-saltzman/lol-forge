@@ -8,7 +8,7 @@ import { Item } from "../classes/item";
 import OneBuild from "./OneBuild";
 import { toast } from "react-toastify";
 import Slot from './Slot'
-import useBuild from "../hooks/useBuild";
+import { Actions } from '../declarations/enums'
 
 interface ListItem {
     value: number
@@ -48,15 +48,10 @@ const Builder = (props: BuildProps) => {
 
     useEffect(() => {
         if (!selectedBuild || !selectedBuild.items) return
-        console.log('new selected build: ', selectedBuild.buildId)
         if (selectedBuild && selectedBuild.items.length) {
-            console.log('updating tray')
-            console.log(selectedBuild.items)
             if (slotJsx.every((jsx, i) => jsx.item.itemId === selectedBuild.items[i].itemId)) {
-                console.log('all items same')
                 return
             } else {
-                console.log('new tray')
                 const newArray = initialJsx.map((j, i) => {
                     const item = selectedBuild.items[i]
                     if (!j.item) return {pos: i, item: item, jsx: genJsx(item, i)}
@@ -118,6 +113,7 @@ const Builder = (props: BuildProps) => {
     useEffect(() => {
         if (!champ) return
         if (selectedBuild && champ.value === selectedBuild.champ.champId) return
+        console.log('champ switched to: ', champ.label)
         props.newChamp(champ.value)
         if (selectedBuild && auth.auth.loggedIn) {
             selectedBuild
@@ -167,11 +163,6 @@ const Builder = (props: BuildProps) => {
 
     const champOptions = loading ? null : champMapper(champList)
     const itemOptions = loading ? null : itemMapper(itemList)
-
-    // useEffect(() => {
-    //     console.log(props.build)
-    // }, [props.build])
-
 
 	return (
 		<>

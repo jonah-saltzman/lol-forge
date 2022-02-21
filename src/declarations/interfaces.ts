@@ -114,27 +114,27 @@ type StatData = {
 //      - toggle 1 vs compare
 
 interface ChampContext {
-	champs: import('./classes/champ').Champ[]
+	champs: import('../classes/champ').Champ[]
 	addChampStats: (
 		champ: number,
 		stats: OneStat[]
-	) => import('./classes/champ').Champ
+	) => import('../classes/champ').Champ
 	champNames: () => string[]
 	champIds: () => number[]
 }
 
 interface ItemContext {
-	items: import('./classes/item').Item[]
+	items: import('../classes/item').Item[]
 	addItemStats: (
 		item: number,
 		stats: OneStat[]
-	) => import('./classes/item').Item
+	) => import('../classes/item').Item
 	itemNames: () => string[]
 	itemIds: () => number[]
 }
 
 interface BuildContext {
-	selected: import('./classes/build').Build
+	selected: import('../classes/build').Build
 	dispatch: (action: BuildAction) => void
 }
 
@@ -157,8 +157,8 @@ type PopItem = PopItemById | PopItemByPos
 
 type BuildAction =
 	| { type: Actions.ChangeName; newName: string }
-	| { type: Actions.ChangeChamp; newChamp: import('./classes/champ').Champ }
-	| { type: Actions.PushItem; item: import('./classes/item').Item }
+	| { type: Actions.ChangeChamp; newChamp: import('../classes/champ').Champ }
+	| { type: Actions.PushItem; item: import('../classes/item').Item }
 	| {
 			type: Actions.MoveItem
 			payload: { itemId: number; newPosition: ItemPosition }
@@ -168,7 +168,7 @@ type BuildAction =
 			payload: PopItemById | PopItemByPos 
 	  }
     | { type: Actions.AddBuildId, buildId: number }
-    | { type: Actions.Swap, build: import('./classes/build').Build }
+    | { type: Actions.Swap, build: import('../classes/build').Build }
 
 type ItemInfo = {
 	itemId: number
@@ -190,4 +190,11 @@ interface BuildPost {
 	champId: number
 	items: number[]
 	buildName?: string
+}
+
+interface ListProps {
+	builds: import('../classes/build').Build[]
+	addBuild: (name: string) => void
+	authed: boolean
+    loading: boolean
 }
