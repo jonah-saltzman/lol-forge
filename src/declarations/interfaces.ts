@@ -193,8 +193,9 @@ interface BuildPost {
 }
 
 interface ListProps {
-	builds: import('../classes/build').Build[]
-	addBuild: (name: string) => void
 	authed: boolean
-    loading: boolean
+	loading: boolean
+	newBuild: (name: string) => Promise<void>
+	builds: import('../classes/build').Build[]
+    setBuilds: (array: import('../classes/build').Build[]) => void
 }

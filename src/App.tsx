@@ -30,39 +30,23 @@ const App = () => {
     const [refresh, setRefresh] = useState(false)
     const [loading, setLoading] = useState(true)
 
-    const guestBuild = (build: Build) => {
-        //setSelectedBuild(build)
-        setSelectedChamp(build.champ)
-    }
-
-    const setSelectedBuild = (buildId: number): void => {
-        const found = builds.find(build => build.buildId === buildId)
-        if (!found) {
-            refreshBuilds(buildId)
-        } else {
-            dispatch({type: Actions.Swap, build: found})
-        }
-    }
-
     useEffect(() => {
         if (!build) return
         const listIndex = builds.findIndex(b => b.buildId === build.buildId)
         if (listIndex === -1) {
-            console.log('build not in list?')
+            console.error('build not in list')
         } else {
-            console.log('array champ: ', builds[listIndex].champ.champName)
-            console.log('state champ: ', build.champ.champName)
-            if (build.updateHash().hash !== builds[listIndex].updateHash().hash) {
-                console.log('hashes are different, updaing array')
+            build.updateHash()
+            builds[listIndex].updateHash()
+            if (build.hash !== builds[listIndex].hash) {
                 const newArray = [...builds]
                 newArray[listIndex] = build
                 setBuilds(newArray)
-            } else {
-                console.log('build hashes matched, not updating array')
             }
         }
     }, [build])
 
+    // item & champ state setters & getters
     const itemNames = () => items.map(item => item.itemName)
     const itemIds = () => items.map(item => item.itemId)
     const champNames = () => champs.map(champ => champ.champName)
@@ -92,6 +76,21 @@ const App = () => {
         }
     }
 
+    const newBuild = async (name: string) => {
+        const champC: ChampContext = { champs, addChampStats, champIds, champNames }
+        const itemC: ItemContext = { items, addItemStats, itemIds, itemNames }
+        if (!selectedChamp) {
+            toast('Select a champ to create a build')
+            return
+        }
+        const newBuild = new Build({items: [], buildName: name, champId: selectedChamp.champId, champStats: [] }, champC, itemC, selectedChamp, [])
+        if (auth.loggedIn) {
+            if (await newBuild.save(auth.token)) {
+                refreshBuilds(newBuild.buildId)
+            }
+        }
+    }
+
     const refreshBuilds = (selected?: number) => {
         if (!auth.loggedIn) return
         setLoading(true)
@@ -106,31 +105,27 @@ const App = () => {
                 if (!found) toast('Unknown error creating build')
                 else {
                     toast(`Created build ${found.buildName}`)
-                    setSelectedBuild(selected)
+                    dispatch({type: Actions.Swap, build: found})
                 }
             }
             setLoading(false)
         })
     }
 
-    useEffect(() => {
-        getChamps().then(setChamps).then(getItems).then(setItems).then(loadedAll)
-        const savedAuth = window.localStorage.getItem('auth')
-        if (savedAuth) {
-            const authData = JSON.parse(savedAuth) as Auth
-            setAuth(authData)
-            toast(`Welcome back, ${authData.email}`)
-        }
-    },[])
-
     const loadedAll = () => {
         setLoaded(true)
     }
 
-    // useEffect(() => {
-    //     refreshBuilds()
-    // }, [auth.loggedIn])
-
+    useEffect(() => {
+			getChamps().then(setChamps).then(getItems).then(setItems).then(loadedAll)
+			const savedAuth = window.localStorage.getItem('auth')
+			if (savedAuth) {
+				const authData = JSON.parse(savedAuth) as Auth
+				setAuth(authData)
+				toast(`Welcome back, ${authData.email}`)
+			}
+		}, [])
+    
     useEffect(() => {
         if (!auth.loggedIn || !champs.length || !items.length || !loaded) {
             setBuilds([])
@@ -139,33 +134,11 @@ const App = () => {
         }
     }, [loaded])
 
-    // export interface BuildInfo {
-	// 		buildName?: string
-	// 		buildId?: number
-	// 		champId: number
-	// 		champStats: OneStat[]
-	// 		items: ItemInfo[]
-	// 	}
-    const newBuild = async (name: string) => {
-        const champC: ChampContext = { champs, addChampStats, champIds, champNames }
-        const itemC: ItemContext = { items, addItemStats, itemIds, itemNames }
-        if (!selectChamp) {
-            toast('Select a champ to create a build')
-            return
-        }
-        const newBuild = new Build({items: [], buildName: name, champId: selectedChamp.champId, champStats: [] }, champC, itemC, selectedChamp, [])
-        if (auth.loggedIn) {
-            if (await newBuild.save(auth.token)) {
-                refreshBuilds(newBuild.buildId)
-            }
-        }
-    }
-
     useEffect(() => {
         if (!auth.loggedIn) {
             setBuilds([])
-            setSelectedBuild(null)
             setSelectedChamp(null)
+            dispatch({type: Actions.Swap, build: null})
         }
     }, [auth.loggedIn])
 
@@ -185,9 +158,10 @@ const App = () => {
 									<Col className='overflow-visible' xs={12} md={1}>
 										<BuildList
 											authed={auth.loggedIn}
-											addBuild={newBuild}
-											builds={builds}
                                             loading={loading}
+                                            newBuild={newBuild}
+                                            builds={builds}
+                                            setBuilds={setBuilds}
 										/>
 									</Col>
 								) : null}

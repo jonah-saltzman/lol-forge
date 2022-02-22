@@ -84,11 +84,8 @@ export class Build {
 	}
 	async save(token: string): Promise<boolean> {
 		if (this.buildId) {
-            const need = this.needSave()
             if (!this.needSave()) return true
-            const patchResult = await patchBuild(token, this)
-            const verify = (this.verifyResponse(patchResult))
-			return this.verifyResponse(patchResult)
+			return this.verifyResponse(await patchBuild(token, this))
 		} else {
 			const newBuildInfo = await createBuild(token, this)
 			if (newBuildInfo) {
