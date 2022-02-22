@@ -5,7 +5,7 @@ export default (build: Build, action: BuildAction) => {
         if (action.type === 'SWAP') {
             return action.build
         } else {
-            throw new Error('No build to swap')
+            throw new Error('No build')
         }
     } else {
         return build.reduce(action)

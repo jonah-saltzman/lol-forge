@@ -201,18 +201,3 @@ export class Build {
 
 const isPopById = (payload: PopItem): payload is PopItemById => !!payload.itemId
 const isPopByPos = (payload: PopItem): payload is PopItemByPos => !!payload.position
-
-// export type ItemInfo = {
-// 	itemId: number
-// 	from: number[]
-// 	into: number[]
-// 	stats: OneStat[]
-// }
-
-// export interface BuildInfo {
-// 	buildName?: string
-// 	buildId?: number
-// 	champId: number
-// 	champStats: OneStat[]
-// 	items: ItemInfo[]
-// }

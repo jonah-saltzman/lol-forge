@@ -1,12 +1,6 @@
 import { Stat } from './stats'
 
-export interface ItemInfo {
-	itemId: number
-	itemName: string
-	icon: string
-}
-
-export class Item extends Stat implements ItemInfo {
+export class Item extends Stat implements ItemInfoI {
 	itemName: string
 	itemId: number
 	icon: string
@@ -14,7 +8,7 @@ export class Item extends Stat implements ItemInfo {
     into: Item[]
     hasStats: boolean
     stats: OneStat[]
-	constructor(info: ItemInfo, stats?: OneStat[]) {
+	constructor(info: ItemInfoI, stats?: OneStat[]) {
 		super(stats || [])
 		this.itemId = info.itemId
 		this.itemName = info.itemName
@@ -25,7 +19,7 @@ export class Item extends Stat implements ItemInfo {
         }
 	}
 	addStats(stats: OneStat[]) {
-		const info: ItemInfo = {
+		const info: ItemInfoI = {
 			itemId: this.itemId,
 			itemName: this.itemName,
 			icon: this.icon,

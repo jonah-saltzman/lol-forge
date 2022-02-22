@@ -1,13 +1,5 @@
 import { Stat } from './stats'
 
-export interface ChampInfo {
-    champId: number
-    champName: string
-    title: string
-    icon: string
-    resourceType: string
-}
-
 export class Champ extends Stat implements ChampInfo {
 	champName: string
 	champId: number

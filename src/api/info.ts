@@ -1,5 +1,4 @@
-import { Champ, ChampInfo } from "../classes/champ";
-import { Item, ItemInfo } from "../classes/item";
+import { Champ, Item } from "../classes";
 import call from "./caller";
 
 export const getChamps = async (): Promise<Champ[]> => {
@@ -10,18 +9,8 @@ export const getChamps = async (): Promise<Champ[]> => {
 
 export const getItems = async(): Promise<Item[]> => {
     const res = await call('/items', 'GET')
-    const itemInfo = await res.json() as ItemInfo[]
+    const itemInfo = await res.json() as ItemInfoI[]
     return itemInfo.map(info => new Item(info))
-}
-
-interface ItemResponse {
-    info: ItemInfo
-    stats: OneStat[]
-}
-
-interface ItemStats {
-    itemId: number
-    stats: OneStat[]
 }
 
 export const getItemStats = async (ids: number[]): Promise<ItemStats[]> => {

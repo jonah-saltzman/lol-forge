@@ -42,13 +42,6 @@ interface AuthContext {
     auth: Auth
 }
 
-// enum ChampModifiers {
-// 	FLAT = 'flat',
-// 	PERCENT = 'percent',
-// 	perLevel = 'perLevel',
-// 	PPL = 'percentPerLevel',
-// }
-
 type Mods = {
     flat?: number,
     percent?: number,
@@ -61,57 +54,11 @@ type StatType = {
 
 type OneStat = StatType & Mods
 
-// interface BaseStat {
-//     statId: number
-// 	flat: number
-// 	percent: number
-//     perLevel: number
-//     percentPerLevel: number
-//     percentBase?: number
-//     percentBonus?: number
-// }
-
-// interface ChampStat extends BaseStat {
-// }
-
-// interface ItemStat extends BaseStat {
-//     percentBase: number
-//     percentBonus: number
-//     unique: boolean
-//     named: string
-//     passive: boolean
-// }
-
-// type Stat = ChampStat | ItemStat
-
 type StatData = {
     statId: number,
     statName: string,
     alias: string | null
 }
-
-// TODOs
-
-// Stats
-// class
-// interface
-
-
-// Item
-// props interface
-
-// Champ
-// props interface
-
-// Build
-// props interface
-
-// BuildList
-// Props interface
-
-// Centerdisplay
-// Props interface
-//      - toggle 1 vs compare
 
 interface ChampContext {
 	champs: import('../classes/champ').Champ[]
@@ -121,6 +68,8 @@ interface ChampContext {
 	) => import('../classes/champ').Champ
 	champNames: () => string[]
 	champIds: () => number[]
+    selectedChamp: import('../classes/champ').Champ
+    setSelectedChamp: (champ: import('../classes/champ').Champ) => void
 }
 
 interface ItemContext {
@@ -177,6 +126,20 @@ type ItemInfo = {
 	stats: OneStat[]
 }
 
+interface ChampInfo {
+	champId: number
+	champName: string
+	title: string
+	icon: string
+	resourceType: string
+}
+
+interface ItemInfoI {
+	itemId: number
+	itemName: string
+	icon: string
+}
+
 interface BuildInfo {
 	buildName?: string
 	buildId?: number
@@ -198,4 +161,26 @@ interface ListProps {
 	newBuild: (name: string) => Promise<void>
 	builds: import('../classes/build').Build[]
     setBuilds: (array: import('../classes/build').Build[]) => void
+}
+
+interface JsxMap {
+	pos: number
+	jsx: JSX.Element
+	item: import('../classes/item').Item
+}
+
+interface ListItem {
+	value: number
+	label: string
+	isChamp: boolean
+}
+
+interface ItemResponse {
+	info: ItemInfoI
+	stats: OneStat[]
+}
+
+interface ItemStats {
+	itemId: number
+	stats: OneStat[]
 }
