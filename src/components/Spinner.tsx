@@ -1,12 +1,7 @@
 import React, { useState } from "react";
 import { Spinner as Bspin, Modal } from "react-bootstrap";
 
-interface SpinProps {
-    center: boolean
-    show: boolean
-}
-
-const Spinner = (props: SpinProps) => {
+export const Spinner = (props: SpinProps) => {
     const thinker = (
 			<div className='thinker'>
 				<span className='think-text'>Loading...</span>
@@ -25,5 +20,3 @@ const Spinner = (props: SpinProps) => {
 		)
         return modal
 }
-
-export default Spinner

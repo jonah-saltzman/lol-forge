@@ -1,17 +1,17 @@
 import React, {useEffect, useState, useContext} from "react";
-import { Champ, Build } from "../classes";
-import { champContext, buildContext, authContext, itemContext } from "../hooks/context/createContext";
+import { Champ, Build } from "../../classes";
+import { context as ctx } from "../../hooks";
 import Select, { createFilter } from 'react-select'
-import LiRender from "./LiRender";
+import { LiRender } from "..";
 
 const search = createFilter({ ignoreCase: true, matchFrom: 'start' })
 
-const ChampSelector = () => {
+export const ChampSelector = () => {
     const [champ, setChamp] = useState<ListItem>(null)
-    const b = useContext(buildContext)
-    const c = useContext(champContext)
-    const a = useContext(authContext)
-    const i = useContext(itemContext)
+    const b = useContext(ctx.buildContext)
+    const c = useContext(ctx.champContext)
+    const a = useContext(ctx.authContext)
+    const i = useContext(ctx.itemContext)
 
     // const selectChamp = (id: number) => {
     //     const newChamp = c.champs.find(champ => champ.champId === id)
@@ -39,6 +39,7 @@ const ChampSelector = () => {
 		}
     
     useEffect(() => {
+        if (!b?.selected?.champ) return
         setChamp({
 					value: b.selected.champ.champId,
 					label: b.selected.champ.champName,
@@ -70,5 +71,3 @@ const ChampSelector = () => {
 			</div>
 		)
 }
-
-export default ChampSelector

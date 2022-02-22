@@ -1,6 +1,6 @@
 import call from "./caller"
 
-const login = async (info: Login): Promise<LoginResponse> => {
+export const login = async (info: Login): Promise<LoginResponse> => {
     const result: LoginResponse = {
         loggedIn: false,
         email: null,
@@ -33,7 +33,7 @@ const login = async (info: Login): Promise<LoginResponse> => {
     }   
 }
 
-const changePassword = async (info: ChangePass): Promise<boolean> => {
+export const changePassword = async (info: ChangePass): Promise<boolean> => {
     try {
         const res = await call('/changepass', 'PATCH', info)
         return res.status === 200
@@ -42,21 +42,12 @@ const changePassword = async (info: ChangePass): Promise<boolean> => {
     }
 }
 
-const signOut = async (token: string): Promise<boolean> => {
+export const signOut = async (token: string): Promise<boolean> => {
     const res = await call('/signout', 'GET', { token })
     return true
 }
 
-const signUp = async (info: Login): Promise<boolean> => {
+export const signUp = async (info: Login): Promise<boolean> => {
     const res = await call('/auth/signup', 'POST', info)
     return res.status === 201
 }
-
-const api = {
-    login,
-    changePassword,
-    signOut,
-    signUp
-}
-
-export default api

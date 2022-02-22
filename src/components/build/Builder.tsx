@@ -1,19 +1,14 @@
 import React, {useState, useEffect, useContext} from "react";
-import * as context from '../hooks/context/createContext';
-import Spinner from "./Spinner";
-import Select, {createFilter} from "react-select";
-import { Champ } from '../classes/champ'
-import { Build } from '../classes/build'
-import { Item } from "../classes/item";
-import OneBuild from "./OneBuild";
+import { context } from '../../hooks';
+import { Spinner } from "../../components";
+import { Champ, Build, Item } from '../../classes'
+import { OneBuild, Slot, LiRender, ChampSelector } from "..";
 import { toast } from "react-toastify";
-import Slot from './Slot'
-import { Actions } from '../declarations/enums'
-import LiRender from "./LiRender";
+import { Actions } from '../../declarations'
 
 const genJsx = (item: Item, i: number) => <Slot i={i} key={item.itemId + 1} item={item} />
 
-const Builder = () => {
+export const Builder = () => {
 	const champs = useContext(context.champContext)
 	const items = useContext(context.itemContext)
     const auth = useContext(context.authContext)
@@ -58,6 +53,7 @@ const Builder = () => {
 	return (
 		<>
 			<Spinner center={true} show={loading} />
+            <ChampSelector />
             <OneBuild />
 			<div className='selectors'>
 				{/* <Select
@@ -75,5 +71,3 @@ const Builder = () => {
 		</>
 	)
 }
-
-export default Builder

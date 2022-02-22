@@ -3,7 +3,7 @@ import { getChampStats, getItemStats } from "../api/info";
 import { champContext, itemContext } from "../hooks/context/createContext";
 import { Champ } from "./champ";
 import { Item } from "./item";
-import { Actions } from "../declarations/enums";
+import { Actions } from "../declarations";
 import { hash } from "../hash";
 
 export class Build {

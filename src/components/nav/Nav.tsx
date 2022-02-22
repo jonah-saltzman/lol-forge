@@ -1,23 +1,18 @@
-import React, { createRef, FormEventHandler, useContext, useEffect, useState } from "react";
-import api from "./api/auth";
+import React, { FormEventHandler, useContext, useEffect, useState } from "react";
+import { signOut as apiOut, signUp, changePassword, login as apiIn } from '../../api'
 import { toast } from "react-toastify";
-import { authContext } from "./hooks/context/createContext";
-import { initialContext } from "./App";
+import { context } from "../../hooks";
+import { initialContext } from "../../App";
 import {
     Button,
 	Navbar,
     Modal,
-    Container,
     Form,
     CloseButton,
 } from 'react-bootstrap'
 
-interface NavProps {
-    toggle?: () => void
-}
-
-const Nav = ({toggle}: NavProps) => {
-    const {auth, setAuth} = useContext(authContext)
+export const Nav = ({toggle}: NavProps) => {
+    const {auth, setAuth} = useContext(context.authContext)
     const {loggedIn, token, email} = auth
     const [oldPass, setOldPass] = useState('')
     const [newPass, setNewPass] = useState('')
@@ -38,7 +33,7 @@ const Nav = ({toggle}: NavProps) => {
 	}
 
     const signOut = () => {
-        api.signOut(token)
+        apiOut(token)
         toast(`Goodbye, ${email}`)
         setAuth(initialContext)
         setEmail('')
@@ -92,7 +87,7 @@ const Nav = ({toggle}: NavProps) => {
             return
         } else {
             if (loggedIn) {
-                const res = await api.changePassword(form as ChangePass)
+                const res = await changePassword(form as ChangePass)
                 if (res) {
                     toast('Successfully changed password')
                     reset()
@@ -103,7 +98,7 @@ const Nav = ({toggle}: NavProps) => {
                     reset()
                 }
             } else if (signIn) {
-                const res = await api.login(form as Login)
+                const res = await apiIn(form as Login)
                 if (res.loggedIn) {
                     login(res)
                 } else {
@@ -111,8 +106,8 @@ const Nav = ({toggle}: NavProps) => {
                     reset()
                 }
             } else {
-                if (await api.signUp(form as Login)) {
-                    const res = await api.login(form as Login)
+                if (await signUp(form as Login)) {
+                    const res = await apiIn(form as Login)
                     if (res.loggedIn) {
                         login(res)
                     } else {
@@ -335,5 +330,3 @@ const Nav = ({toggle}: NavProps) => {
 			</Navbar>
 		)
 }
-
-export default Nav

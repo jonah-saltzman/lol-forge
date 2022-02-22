@@ -1,5 +1,5 @@
 import React from "react";
-import { Item } from "../classes/item";
+import { Item } from "../../classes";
 import { BiArrowBack } from 'react-icons/bi'
 
 interface SlotProps {
@@ -7,7 +7,7 @@ interface SlotProps {
     i: number
 }
 
-const Slot = (props: SlotProps) => {
+export const Slot = (props: SlotProps) => {
     return (
 			<div className='slot'>
 				{props.item ? (
@@ -22,5 +22,3 @@ const Slot = (props: SlotProps) => {
 			</div>
 		)
 }
-
-export default Slot

@@ -1,6 +1,6 @@
 import { Build } from "../../classes/build"
 
-export default (build: Build, action: BuildAction) => {
+export const reducer = (build: Build, action: BuildAction) => {
     if (!build) {
         if (action.type === 'SWAP') {
             return action.build

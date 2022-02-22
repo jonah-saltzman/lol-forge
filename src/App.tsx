@@ -1,17 +1,11 @@
-import React, { createContext, useState, useEffect, useReducer} from 'react'
+import React, { useState, useEffect, useReducer} from 'react'
 import { toast, ToastContainer } from 'react-toastify'
-import Nav from './Nav'
-import { Champ } from './classes/champ'
-import { Item } from './classes/item'
-import { getChamps, getItems } from './api/info'
-import Builder from './components/Builder'
-import BuildList from './components/BuildList'
+import { Nav, Builder, List as BuildList } from './components'
+import { Champ, Item, Build } from './classes'
+import { getChamps, getItems, getAllBuilds } from './api'
 import { Col, Container, Row } from 'react-bootstrap'
-import { Build } from './classes/build'
-import { getAllBuilds } from './api/builds'
-import * as context from './hooks/context/createContext'
-import buildReducer from './hooks/context/buildReducer'
-import { Actions } from './declarations/enums'
+import { context, reducer } from './hooks'
+import { Actions } from './declarations'
 
 export const initialContext: Auth = {
 	loggedIn: false,
@@ -25,7 +19,7 @@ const App = () => {
     const [items, setItems] = useState<Item[]>([])
     const [builds, setBuilds] = useState<Build[]>([])
     const [loaded, setLoaded] = useState(false)
-    const [build, dispatch] = useReducer(buildReducer, null)
+    const [build, dispatch] = useReducer(reducer, null)
     const [selectedChamp, setSelectedChamp] = useState<Champ>(null)
     const [refresh, setRefresh] = useState(false)
     const [loading, setLoading] = useState(true)

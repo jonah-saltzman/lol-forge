@@ -1,14 +1,13 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Build } from "../classes/build";
-import { Form } from 'react-bootstrap'
-import { buildContext, authContext } from '../hooks/context/createContext'
-import { Actions } from "../declarations/enums";
-import { Spinner } from "react-bootstrap";
+import React, { useState, useContext } from "react";
+import { Build } from "../../classes";
+import { context } from '../../hooks'
+import { Actions } from "../../declarations";
+import { Spinner, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
 
-const List = (props: ListProps) => {
-    const {selected, dispatch} = useContext(buildContext)
-    const {auth} = useContext(authContext)
+export const List = (props: ListProps) => {
+    const {selected, dispatch} = useContext(context.buildContext)
+    const {auth} = useContext(context.authContext)
     const [buildName, setBuildName] = useState('')
     const [newBuild, setNewBuild] = useState(false)
 
@@ -137,5 +136,3 @@ const List = (props: ListProps) => {
 				)
     }
 }
-
-export default List

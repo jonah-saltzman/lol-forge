@@ -184,3 +184,12 @@ interface ItemStats {
 	itemId: number
 	stats: OneStat[]
 }
+
+interface NavProps {
+	toggle?: () => void
+}
+
+interface SpinProps {
+	center: boolean
+	show: boolean
+}

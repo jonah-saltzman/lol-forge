@@ -1,9 +1,9 @@
-import React, {useContext} from 'react'
-import { champContext, itemContext } from '../hooks/context/createContext'
+import React, { useContext } from 'react'
+import { context } from '../../hooks'
 
-const LiRender = (li: ListItem) => {
-    const c = useContext(champContext)
-    const i = useContext(itemContext)
+export const LiRender = (li: ListItem) => {
+    const c = useContext(context.champContext)
+    const i = useContext(context.itemContext)
 
 	const listItem = li.isChamp
 		? c.champs.find((c) => c.champId === li.value)
@@ -15,5 +15,3 @@ const LiRender = (li: ListItem) => {
 		</div>
 	)
 }
-
-export default LiRender
