@@ -4,7 +4,6 @@ import { champContext, itemContext } from "../hooks/context/createContext";
 import { Champ } from "./champ";
 import { Item } from "./item";
 import { Actions } from "../declarations";
-import { hash } from "../hash";
 
 export class Build {
 	buildName?: string
@@ -201,3 +200,16 @@ export class Build {
 
 const isPopById = (payload: PopItem): payload is PopItemById => !!payload.itemId
 const isPopByPos = (payload: PopItem): payload is PopItemByPos => !!payload.position
+
+function hash(input: string): number {
+	let hash = 0,
+		i,
+		chr
+	if (input.length === 0) return hash
+	for (i = 0; i < input.length; i++) {
+		chr = input.charCodeAt(i)
+		hash = (hash << 5) - hash + chr
+		hash |= 0 // Convert to 32bit integer
+	}
+	return hash
+}
