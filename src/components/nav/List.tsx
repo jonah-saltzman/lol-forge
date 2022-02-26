@@ -39,8 +39,8 @@ export const List = (props: ListProps) => {
     const NameForm = (isNew?: boolean, buildId?: number) => {
         const prevName = props.builds.find(
 					(b) => b.buildId === buildId
-				).buildName ?? null
-        if (!isNew) setBuildName(prevName)
+				)?.buildName ?? null
+        if (!isNew && !buildName) setBuildName(prevName)
         return (
 			<Form onBlur={() => {
                 setBuildName('')
@@ -127,9 +127,12 @@ export const List = (props: ListProps) => {
 						{props.authed ? (
 							<div
 								key={props.builds.length + 1 ?? -1}
-								onClick={() => setNewBuild(true)}
+								onClick={() => {
+                                    setNewBuild(true)
+                                    setBuildName('New Build')
+                                }}
 								className='build-li'>
-								{newBuild ? NameForm() : newBuildLi}
+								{newBuild ? NameForm(true) : newBuildLi}
 							</div>
 						) : null}
 					</div>

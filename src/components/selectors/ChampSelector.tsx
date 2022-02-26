@@ -36,6 +36,8 @@ export const ChampSelector = () => {
 				})
 			} else if (a.auth.loggedIn && b.selected && b.selected.champ.champId !== val.value) {
                 b.dispatch({type: Actions.ChangeChamp, newChamp: selectedChamp})
+            } else if (!b.selected) {
+                c.setSelectedChamp(selectedChamp)
             }
 		}
     

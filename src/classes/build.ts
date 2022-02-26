@@ -141,10 +141,6 @@ export class Build {
     }
     needSave(info?: BuildInfo): boolean {
         const current = info ? info : this.getBuildInfo()
-        console.log('current:')
-        console.log(current)
-        console.log('previous:')
-        console.log(this.previousInfo)
         return (this.previousInfo.buildName !== current.buildName)
             || (this.previousInfo.champId !== current.champId)
             || (this.previousInfo.items.length !== current.items.length)
