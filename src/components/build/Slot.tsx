@@ -5,7 +5,7 @@ import { BiArrowBack } from 'react-icons/bi'
 interface SlotProps {
     item?: Item
     i: number
-}
+} 
 
 export const Slot = (props: SlotProps) => {
     return (

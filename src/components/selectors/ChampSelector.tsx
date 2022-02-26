@@ -3,6 +3,7 @@ import { Champ, Build } from "../../classes";
 import { context as ctx } from "../../hooks";
 import Select, { createFilter } from 'react-select'
 import { LiRender } from "..";
+import { Actions } from "../../declarations";
 
 const search = createFilter({ ignoreCase: true, matchFrom: 'start' })
 
@@ -55,7 +56,7 @@ export const ChampSelector = () => {
 					value={champ}
 					onChange={selectChamp}
 					closeMenuOnScroll={false}
-					formatOptionLabel={LiRender}
+					formatOptionLabel={(data: ListItem) => <LiRender {...data} />}
 					options={
 						c?.champs?.length
 							? c.champs.map((champ) => ({

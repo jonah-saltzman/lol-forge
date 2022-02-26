@@ -81,17 +81,17 @@ export class Build {
 			return this
 		}
 	}
-	async save(token: string): Promise<boolean> {
+	async save(token: string): Promise<Build> {
 		if (this.buildId) {
-            if (!this.needSave()) return true
-			return this.verifyResponse(await patchBuild(token, this))
+            if (!this.needSave()) return this
+			if (this.verifyResponse(await patchBuild(token, this))) return this.wasSaved()
 		} else {
 			const newBuildInfo = await createBuild(token, this)
 			if (newBuildInfo) {
 				this.buildId = newBuildInfo.buildId
-				return true
+				return this.wasSaved()
 			} else {
-				return false
+				throw new Error('Failed to save build')
 			}
 		}
 	}
@@ -141,13 +141,25 @@ export class Build {
     }
     needSave(info?: BuildInfo): boolean {
         const current = info ? info : this.getBuildInfo()
+        console.log('current:')
+        console.log(current)
+        console.log('previous:')
+        console.log(this.previousInfo)
         return (this.previousInfo.buildName !== current.buildName)
             || (this.previousInfo.champId !== current.champId)
             || (this.previousInfo.items.length !== current.items.length)
             || (current.items.some((currentItem, i) => currentItem.itemId !== this.previousInfo.items[i].itemId))
     }
     public static clone(build: Build): Build {
-        return new Build(undefined, undefined, undefined, undefined, undefined, build)
+        const old = build
+        const n = new Build(undefined, undefined, undefined, undefined, undefined, build)
+        n.previousInfo = old.previousInfo
+        return n
+    }
+    wasSaved(): Build {
+        this.previousInfo = this.getBuildInfo()
+        this.saved = true
+        return this
     }
     reduce(action: BuildAction): Build {
         switch(action.type) {

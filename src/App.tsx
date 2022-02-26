@@ -54,9 +54,8 @@ const App = () => {
         }
         const newBuild = new Build({items: [], buildName: name, champId: selectedChamp.champId, champStats: [] }, champC, itemC, selectedChamp, [])
         if (auth.loggedIn) {
-            if (await newBuild.save(auth.token)) {
-                refreshBuilds(newBuild.buildId)
-            }
+            const saved = await newBuild.save(auth.token)
+            refreshBuilds(saved.buildId)
         }
     }
 
@@ -82,6 +81,14 @@ const App = () => {
     const loadedAll = () => {
         setLoaded(true)
     }
+
+    useEffect(() => {
+        if (!build) return
+        const s = build.needSave()
+        console.log('need to save? ',s)
+        if (!s || !auth.loggedIn) return
+        build.save(auth.token).then(b => dispatch({type: Actions.Swap, build: b}))
+    }, [build])
 
     useEffect(() => {
         if (!build) return
@@ -122,6 +129,8 @@ const App = () => {
             setBuilds([])
             setSelectedChamp(null)
             dispatch({type: Actions.Swap, build: null})
+        } else {
+            refreshBuilds()
         }
     }, [auth.loggedIn])
 
