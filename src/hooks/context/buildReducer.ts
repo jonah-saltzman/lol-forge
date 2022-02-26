@@ -8,6 +8,7 @@ export const reducer = (build: Build, action: BuildAction) => {
             throw new Error('No build')
         }
     } else {
+        if (action.type === 'SWAP' && action.build === null) return null
         return build.reduce(action)
     }
 }

@@ -104,6 +104,7 @@ const App = () => {
                 setBuilds(newArray)
             }
         }
+        if (build.champ.champId !== selectedChamp?.champId) setSelectedChamp(build.champ)
     }, [build])
 
     useEffect(() => {
@@ -133,6 +134,11 @@ const App = () => {
             refreshBuilds()
         }
     }, [auth.loggedIn])
+
+    useEffect(() => {
+        if (!builds || !builds.length || build) return
+        dispatch({type: Actions.Swap, build: builds[0]})
+    }, [builds])
 
 	return (
 		<context.authContext.Provider value={{ auth, setAuth }}>

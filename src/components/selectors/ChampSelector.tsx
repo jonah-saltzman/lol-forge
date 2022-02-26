@@ -36,19 +36,26 @@ export const ChampSelector = () => {
 				})
 			} else if (a.auth.loggedIn && b.selected && b.selected.champ.champId !== val.value) {
                 b.dispatch({type: Actions.ChangeChamp, newChamp: selectedChamp})
+                c.setSelectedChamp(selectedChamp)
             } else if (!b.selected) {
                 c.setSelectedChamp(selectedChamp)
             }
 		}
     
     useEffect(() => {
-        if (!b?.selected?.champ) return
+        if (!b.selected) return
         setChamp({
 					value: b.selected.champ.champId,
 					label: b.selected.champ.champName,
 					isChamp: true,
 				})
     }, [b?.selected?.champ])
+
+    useEffect(() => {
+        console.log(c.selectedChamp)
+        if (c.selectedChamp) return
+        setChamp(null)
+    }, [c.selectedChamp])
 
     return (
 			<div className='selectors'>

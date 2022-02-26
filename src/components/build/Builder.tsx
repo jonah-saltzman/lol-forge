@@ -16,26 +16,6 @@ export const Builder = () => {
 	const [loading, setLoading] = useState(true)
     const [itemList, setItemList] = useState<Item[]>(null)
     const [item, setItem] = useState<ListItem>(null)
-    
-    const itemMapper = (items: Item[]): ListItem[] => {
-        if (!items.length) return []
-        return items.map((item) => ({
-            value: item.itemId,
-            label: item.itemName,
-            isChamp: false,
-        }))
-    }
-
-    const addItem = async (val: ListItem) => {
-        setItem(null)
-        if (!selectedBuild) return toast('Select a champion to begin')
-        if (selectedBuild.items.length >= 6) return
-        dispatch({
-					type: Actions.PushItem,
-					item: items.items.find((i) => i.itemId === val.value),
-				})
-        // if (auth.auth.loggedIn) await selectedBuild.save(auth.auth.token)
-    }
         
 
 	useEffect(() => {
@@ -47,8 +27,6 @@ export const Builder = () => {
             setItemList(items.items)
 		}
 	}, [champs.champs, items.items])
-
-    const itemOptions = loading ? null : itemMapper(itemList)
 
 	return (
 		<>
