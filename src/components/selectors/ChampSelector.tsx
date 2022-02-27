@@ -37,6 +37,11 @@ export const ChampSelector = () => {
 			} else if (a.auth.loggedIn && b.selected && b.selected.champ.champId !== val.value) {
                 b.dispatch({type: Actions.ChangeChamp, newChamp: selectedChamp})
                 c.setSelectedChamp(selectedChamp)
+                if (a.auth.loggedIn) {
+                    b.selected.save(a.auth.token).then((r) => {
+                        b.dispatch({ type: Actions.Swap, build: r })
+                    })
+                }
             } else if (!b.selected) {
                 c.setSelectedChamp(selectedChamp)
             }
@@ -50,6 +55,10 @@ export const ChampSelector = () => {
 					isChamp: true,
 				})
     }, [b?.selected?.champ])
+
+    useEffect(() => {
+        if (!b.selected) return
+    }, [b.selected?.items])
 
     useEffect(() => {
         if (c.selectedChamp) return

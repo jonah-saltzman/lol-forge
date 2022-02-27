@@ -123,7 +123,9 @@ type ItemInfo = {
 	itemId: number
 	from: number[]
 	into: number[]
-	stats: OneStat[]
+	statsArray: OneStat[]
+    itemName: string
+    icon: string
 }
 
 interface ChampInfo {

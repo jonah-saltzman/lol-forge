@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer} from 'react'
+import React, { useState, useEffect, useReducer, useContext} from 'react'
 import { toast, ToastContainer } from 'react-toastify'
 import { Nav, Builder, List as BuildList } from './components'
 import { Champ, Item, Build } from './classes'
@@ -65,8 +65,6 @@ const App = () => {
         if (!auth.loggedIn) return
         setLoading(true)
         getAllBuilds(auth.token).then((infos) => {
-            console.log('all infos:')
-            console.log(infos)
             const newBuilds = infos.map(info => new Build(info, champC, itemC))
             setBuilds(newBuilds)
         }).then(() => {
@@ -86,12 +84,16 @@ const App = () => {
         setLoaded(true)
     }
 
-    useEffect(() => {
-        if (!build) return
-        const s = build.needSave()
-        if (!s || !auth.loggedIn) return
-        build.save(auth.token).then(b => dispatch({type: Actions.Swap, build: b}))
-    }, [build])
+    // useEffect(() => {
+    //     if (!build) return
+    //     const s = build.needSave()
+    //     if (!s || !auth.loggedIn) return
+    //     build.save(auth.token).then(b => {
+    //         console.log('saved build: ')
+    //         console.log(b)
+    //         dispatch({type: Actions.Swap, build: b}
+    //             )})
+    // }, [build])
 
     useEffect(() => {
         if (!build) {
@@ -127,7 +129,6 @@ const App = () => {
         if (!auth.loggedIn || !champs.length || !items.length || !loaded) {
             setBuilds([])
         } else {
-            console.log('hit else')
             refreshBuilds()
         }
     }, [loaded])

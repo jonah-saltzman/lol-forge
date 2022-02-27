@@ -9,7 +9,7 @@ export const getChamps = async (): Promise<Champ[]> => {
 
 export const getItems = async(): Promise<Item[]> => {
     const res = await call('/items', 'GET')
-    const itemInfo = await res.json() as ItemInfoI[]
+    const itemInfo = await res.json() as ItemInfo[]
     return itemInfo.map(info => new Item(info))
 }
 

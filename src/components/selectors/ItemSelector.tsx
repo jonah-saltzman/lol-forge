@@ -39,9 +39,12 @@ export const ItemSelector = () => {
 			item: i.items.find((i) => i.itemId === item.value)
 		})
         setShouldPush(false)
-        // if (a.auth.loggedIn) {
-        //     b.selected.save(a.auth.token)
-        // }
+        setItem(null)
+        if (a.auth.loggedIn) {
+            b.selected.save(a.auth.token).then(r => {
+                b.dispatch({type: Actions.Swap, build: r})
+            })
+        }
     }, [shouldPush])
 
 	return (

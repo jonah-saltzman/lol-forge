@@ -26,8 +26,7 @@ export class Build {
             this.champ = build.champ
             this.items = build.items
             this.buildId = build.buildId
-            this.saved = false
-            console.log('cloning')
+            this.saved = build.saved
             this.previousInfo = this.getBuildInfo()
             this.hash = this.currentHash()
             return
@@ -39,11 +38,9 @@ export class Build {
 		this.items = items
 			? items
 			: info.items.map((item) => {
-					return itemC.addItemStats(item.itemId, item.stats)
-			  }) && ([] as Item[])
+					return itemC.addItemStats(item.itemId, item.statsArray)
+			  }) ?? ([] as Item[])
 		this.buildId = info.buildId
-        console.log('in constructor, before getinfo:', this.champ)
-        console.log(this)
         this.previousInfo = this.getBuildInfo()
 	}
 	public static async create(
@@ -128,12 +125,13 @@ export class Build {
 		return new Build(info, champC, itemC, champ)
 	}
     getBuildInfo(): BuildInfo {
-        console.log(this.items)
         const itemInfos: ItemInfo[] = this.items.map((item) => ({
             itemId: item.itemId,
-            from: item.from.map((from) => from.itemId),
-            into: item.into.map((into) => into.itemId),
-            stats: item.stats,
+            from: item.from,
+            into: item.into,
+            statsArray: item.statsArray,
+            itemName: item.itemName,
+            icon: item.icon,
         }))
         return {
             buildName: this.buildName,
@@ -144,11 +142,12 @@ export class Build {
         }
     }
     needSave(info?: BuildInfo): boolean {
-        const current = info ? info : this.getBuildInfo()
-        return (this.previousInfo.buildName !== current.buildName)
-            || (this.previousInfo.champId !== current.champId)
-            || (this.previousInfo.items.length !== current.items.length)
-            || (current.items.some((currentItem, i) => currentItem.itemId !== this.previousInfo.items[i].itemId))
+        return !this.saved
+        // const current = info ? info : this.getBuildInfo()
+        // return (this.previousInfo.buildName !== current.buildName)
+        //     || (this.previousInfo.champId !== current.champId)
+        //     || (this.previousInfo.items.length !== current.items.length)
+        //     || (current.items.some((currentItem, i) => currentItem.itemId !== this.previousInfo.items[i].itemId))
     }
     public static clone(build: Build): Build {
         const old = build
@@ -165,17 +164,17 @@ export class Build {
         switch(action.type) {
             case Actions.ChangeName:
                 this.buildName = action.newName
-                return Build.clone(this)
+                return this
             case Actions.AddBuildId:
                 this.buildId = action.buildId
-                return Build.clone(this)
+                return this
             case Actions.ChangeChamp:
                 this.champ = action.newChamp
-                return Build.clone(this)
+                return this
             case Actions.PushItem:
                 if (this.items.length >= 6) return this
                 this.items.push(action.item)
-                return Build.clone(this)
+                return this
             case Actions.MoveItem:
                 const currentPos = this.items.findIndex(i => i.itemId === action.payload.itemId)
                 if (currentPos === -1) return this
@@ -183,10 +182,10 @@ export class Build {
                     const temp = this.items[action.payload.newPosition]
                     this.items[action.payload.newPosition] = this.items[currentPos]
                     this.items[currentPos] = temp
-                    return Build.clone(this)
+                    return this
                 } else {
                     this.items[action.payload.newPosition] = this.items[currentPos]
-                    return Build.clone(this)
+                    return this
                 }
             case Actions.PopItem:
                 if (isPopById(action.payload)) {
@@ -194,7 +193,7 @@ export class Build {
                 } else if (isPopByPos(action.payload)) {
                     this.items.splice(action.payload.position, 1)
                 }
-                return Build.clone(this)
+                return this
             case Actions.Swap:
                 return Build.clone(action.build)
             default:

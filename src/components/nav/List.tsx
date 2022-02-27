@@ -87,6 +87,7 @@ export const List = (props: ListProps) => {
                             ? newArr[i + 1]
                             : null
                         : null
+                    console.log('newSelected build: ', newSelected)
                     dispatch({type: Actions.Swap, build: newSelected})
                 }
             } else {
@@ -115,7 +116,7 @@ export const List = (props: ListProps) => {
 									<div
 										key={i}
 										onClick={() => {
-											selectBuild(build)
+											//selectBuild(build)
 										}}
 										className={
 											'build-li ' +
@@ -125,7 +126,7 @@ export const List = (props: ListProps) => {
 													: null
 												: null)
 										}>
-										{build.buildName}
+										<span onClick={() => selectBuild(build)}>{build.buildName}</span>
 										<BiX onClick={() => deleteBuild(build)} color='red' />
 									</div>
 							  ))

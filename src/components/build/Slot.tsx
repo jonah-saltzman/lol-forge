@@ -8,6 +8,8 @@ interface SlotProps {
 } 
 
 export const Slot = (props: SlotProps) => {
+    // console.log(`slot ${props.i}: `)
+    // console.log(props.item)
     return (
 			<div className='slot'>
 				{props.item ? (

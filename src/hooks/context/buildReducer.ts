@@ -9,6 +9,10 @@ export const reducer = (build: Build, action: BuildAction) => {
         }
     } else {
         if (action.type === 'SWAP' && action.build === null) return null
-        return build.reduce(action)
+        const newBuild = build.reduce(action)
+        if (action.type !== 'SWAP') {
+            newBuild.saved = false
+        }
+        return newBuild
     }
 }
