@@ -174,7 +174,7 @@ export const Nav = ({toggle}: NavProps) => {
 								className='input mt-4'
 								type='password'
 								name='password'
-								id='password'
+								id='new-password'
 								value={oldPass}
 								onChange={(e) => setOldPass(e.target.value)}
 								placeholder='Current password'
@@ -185,7 +185,7 @@ export const Nav = ({toggle}: NavProps) => {
 								className='input mt-4'
 								type='password'
 								name='password'
-								id='password'
+								id='old-password'
 								value={newPass}
 								onChange={(e) => setNewPass(e.target.value)}
 								placeholder={loggedIn ? 'New Password' : 'Password'}
