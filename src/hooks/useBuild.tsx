@@ -17,19 +17,36 @@ export const useBuild = (): patchItems => {
                     type: Actions.PopItem,
                     payload: { position: toPos(item.i) },
                 })
-                if (auth.loggedIn) {
-                    selected.save(auth.token).then((r) => {
-                        dispatch({ type: Actions.Swap, build: r })
-                    })
-                }
+                break
+            case ItemActions.Left:
+                dispatch({
+                    type: Actions.MoveItem,
+                    payload: {
+                        itemId: item.item.itemId,
+                        newPosition: toPos(item.i - 1),
+                    }
+                })
+                break
+            case ItemActions.Right:
+                dispatch({
+                    type: Actions.MoveItem,
+                    payload: {
+                        itemId: item.item.itemId,
+                        newPosition: toPos(item.i + 1),
+                    }
+                })
                 break
             default:
-                console.log('no action specified')
+                console.error('no action specified')
                 break
+        }
+        dispatch({ type: Actions.Swap, build: selected })
+        if (auth.loggedIn) {
+            selected.save(auth.token)
         }
     }
 
-    return patchItems
+    return [patchItems, selected?.items?.length ?? 0]
 }
 
 const toPos = (n: number): ItemPosition => {

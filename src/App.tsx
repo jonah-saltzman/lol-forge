@@ -138,7 +138,9 @@ const App = () => {
             setBuilds([])
             setSelectedChamp(null)
             dispatch({type: Actions.Swap, build: null})
-        } 
+        } else {
+            refreshBuilds()
+        }
     }, [auth.loggedIn])
 
     useEffect(() => {
@@ -152,27 +154,29 @@ const App = () => {
 				<context.itemContext.Provider value={itemC}>
 					<ToastContainer />
 					<Nav />
-					<Container fluid>
-						<Row>
-							<context.buildContext.Provider
-								value={{ selected: build, dispatch }}>
-								{auth.loggedIn ? (
-									<Col className='overflow-visible' xs={12} md={3}>
-										<BuildList
-											authed={auth.loggedIn}
-                                            loading={loading}
-                                            newBuild={newBuild}
-                                            builds={builds}
-                                            setBuilds={setBuilds}
-										/>
+					{auth.loggedIn ? (
+						<Container fluid>
+							<Row>
+								<context.buildContext.Provider
+									value={{ selected: build, dispatch }}>
+									{auth.loggedIn ? (
+										<Col className='overflow-visible' xs={12} md={3}>
+											<BuildList
+												authed={auth.loggedIn}
+												loading={loading}
+												newBuild={newBuild}
+												builds={builds}
+												setBuilds={setBuilds}
+											/>
+										</Col>
+									) : null}
+									<Col className='main-col' xs={12} md={auth.loggedIn ? 9 : 12}>
+										<Builder />
 									</Col>
-								) : null}
-								<Col className='main-col' xs={12} md={auth.loggedIn ? 9 : 12}>
-									<Builder />
-								</Col>
-							</context.buildContext.Provider>
-						</Row>
-					</Container>
+								</context.buildContext.Provider>
+							</Row>
+						</Container>
+					) : null}
 				</context.itemContext.Provider>
 			</context.champContext.Provider>
 		</context.authContext.Provider>

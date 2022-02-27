@@ -4,7 +4,7 @@ import { ItemActions } from "../../declarations";
 import { BiArrowBack, BiX } from 'react-icons/bi'
 
 export const Slot = (props: SlotProps) => {
-    const patcher = useBuild()
+    const [patcher, len] = useBuild()
     // console.log(`slot ${props.i}: `)
     // console.log(props.item)
     return (
@@ -16,8 +16,8 @@ export const Slot = (props: SlotProps) => {
 							<img className='large-icon' src={props.item.icon} />
 						</div>
 						<div className='arrows'>
-							{props.i === 0 ? null : <BiArrowBack />}
-							{props.i === 5 ? null : <BiArrowBack className='right' />}
+							{props.i === 0 ? null : <BiArrowBack onClick={() => patcher(props, ItemActions.Left)} />}
+							{props.i === len - 1 ? null : <BiArrowBack onClick={() => patcher(props, ItemActions.Right)} className='right' />}
 						</div>
 					</>
 				) : null}

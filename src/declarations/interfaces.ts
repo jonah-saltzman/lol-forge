@@ -207,4 +207,4 @@ enum ItemActions {
 	Delete = 'DELETE',
 }
 
-type patchItems = (item: SlotProps, action: ItemActions) => void
+type patchItems = [(item: SlotProps, action: ItemActions) => void, number]

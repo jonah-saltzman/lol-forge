@@ -1,6 +1,5 @@
 import { patchBuild, createBuild, deleteBuild } from "../api/builds";
 import { getChampStats, getItemStats } from "../api/info";
-import { champContext, itemContext } from "../hooks/context/createContext";
 import { Champ } from "./champ";
 import { Item } from "./item";
 import { Actions } from "../declarations";
@@ -132,6 +131,7 @@ export class Build {
             statsArray: item.statsArray,
             itemName: item.itemName,
             icon: item.icon,
+            isNull: false
         }))
         return {
             buildName: this.buildName,
@@ -184,6 +184,16 @@ export class Build {
                     this.items[currentPos] = temp
                     return this
                 } else {
+                    if (action.payload.newPosition >= this.items.length) {
+                        const newArray = new Array(action.payload.newPosition + 1).fill(null)
+                        this.items.forEach((item, i) => newArray[i] = item)
+                        newArray[currentPos] = null
+                        newArray[action.payload.newPosition] = this.items[currentPos]
+                        console.log('newArray: ')
+                        console.log(newArray)
+                        this.items = newArray
+                        return this
+                    }
                     this.items[action.payload.newPosition] = this.items[currentPos]
                     return this
                 }

@@ -136,7 +136,7 @@ export const List = (props: ListProps) => {
 								key={props.builds.length + 1 ?? -1}
 								onClick={() => {
 									setNewBuild(true)
-									setBuildName('New Build')
+									setBuildName('')
 								}}
 								className='build-li'>
 								{newBuild ? NameForm(true) : newBuildLi}
