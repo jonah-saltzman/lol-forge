@@ -210,7 +210,7 @@ export class Build {
 }
 
 const isPopById = (payload: PopItem): payload is PopItemById => !!payload.itemId
-const isPopByPos = (payload: PopItem): payload is PopItemByPos => !!payload.position
+const isPopByPos = (payload: PopItem): payload is PopItemByPos => !!payload.position || payload.position === 0
 
 function hash(input: string): number {
 	let hash = 0,

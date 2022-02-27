@@ -242,21 +242,33 @@ textarea:-moz-placeholder {
     min-height: 100px;
     border-radius: 10px;
     background-color: #5d80bdd3;
-    border-color: #5d2b0ad3;
+    border: #5d2b0ad3 2px solid;
     margin: 0 0.5rem;
     display: flex;
     flex-direction: column;
 }
 
+.top {
+    display: flex;
+    flex-direction: column;
+}
+
 .large-icon {
-    padding: 1rem;
-    padding-bottom: 0.4rem;
+    margin: 1rem;
+    margin-bottom: 0.4rem;
+    border-radius: 0.5em;
+    border:rgba(0, 0, 0, 0.5) 2px solid;
 }
 
 .arrows {
     display: flex;
     justify-content: space-evenly;
     padding-bottom: 0.5rem;
+}
+
+.delete-item {
+    position: absolute;
+    align-self: flex-end;
 }
 
 .tray {

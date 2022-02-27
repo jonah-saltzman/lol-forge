@@ -1,24 +1,37 @@
 
-// import React, {useContext} from "react";
-// import { buildContext } from "../App";
-// import { Build } from "../classes/build";
+import React, {useContext} from "react";
+import { context } from "../hooks";
+import { Build } from "../classes/build";
+import { ItemActions, Actions } from '../declarations'
 
-// interface BuildHook {
-//     selectedBuild: Build
-//     modifyBuild: (build: Build) => void
-//     selectBuild: (buildId: number) => void
-// }
+export const useBuild = (): patchItems => {
+    const {selected, dispatch} = useContext(context.buildContext)
+    const {auth} = useContext(context.authContext)
 
-// const useBuild = (): BuildHook => {
-//     const {selectedBuild, setSelectedBuild, modifySelectedBuild} = useContext(buildContext)
+    const patchItems = (item: SlotProps, action: ItemActions) => {
+        console.log(item, action)
+        switch (action) {
+            case ItemActions.Delete:
+                console.log('deleting item: ', toPos(item.i))
+                dispatch({
+                    type: Actions.PopItem,
+                    payload: { position: toPos(item.i) },
+                })
+                if (auth.loggedIn) {
+                    selected.save(auth.token).then((r) => {
+                        dispatch({ type: Actions.Swap, build: r })
+                    })
+                }
+                break
+            default:
+                console.log('no action specified')
+                break
+        }
+    }
 
-//     const modifyBuild = (build: Build) => {
-//         modifySelectedBuild(build)
-//     }
+    return patchItems
+}
 
-//     const selectBuild = setSelectedBuild
-
-//     return {selectedBuild, modifyBuild, selectBuild}
-// }
-
-// export default useBuild
+const toPos = (n: number): ItemPosition => {
+    return n as ItemPosition
+}

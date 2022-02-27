@@ -7,3 +7,9 @@ export enum Actions {
 	AddBuildId = 'ADD_BUILD_ID',
 	Swap = 'SWAP',
 }
+
+export enum ItemActions {
+    Left = 'MOVE_LEFT',
+    Right = 'MOVE_RIGHT',
+    Delete = 'DELETE'
+}

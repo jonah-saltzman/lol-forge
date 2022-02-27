@@ -195,3 +195,16 @@ interface SpinProps {
 	center: boolean
 	show: boolean
 }
+
+interface SlotProps {
+	item?: import('../classes').Item
+	i: number
+}
+
+enum ItemActions {
+	Left = 'MOVE_LEFT',
+	Right = 'MOVE_RIGHT',
+	Delete = 'DELETE',
+}
+
+type patchItems = (item: SlotProps, action: ItemActions) => void
