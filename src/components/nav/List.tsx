@@ -4,6 +4,7 @@ import { context } from '../../hooks'
 import { Actions } from "../../declarations";
 import { Spinner, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
+import { BiX } from 'react-icons/bi'
 
 export const List = (props: ListProps) => {
     const {selected, dispatch} = useContext(context.buildContext)
@@ -72,6 +73,10 @@ export const List = (props: ListProps) => {
                 const newArr = [...props.builds]
                 newArr.splice(i, 1)
                 props.setBuilds(newArr)
+                if (newArr.length === 0) {
+                    dispatch({type: Actions.Swap, build: null})
+                    return
+                }
                 if (build.buildId === selected.buildId) {
                     const newSelected = newArr.length
                         ? newArr[i]
@@ -121,6 +126,7 @@ export const List = (props: ListProps) => {
 												: null)
 										}>
 										{build.buildName}
+										<BiX onClick={() => deleteBuild(build)} color='red' />
 									</div>
 							  ))
 							: null}
@@ -128,9 +134,9 @@ export const List = (props: ListProps) => {
 							<div
 								key={props.builds.length + 1 ?? -1}
 								onClick={() => {
-                                    setNewBuild(true)
-                                    setBuildName('New Build')
-                                }}
+									setNewBuild(true)
+									setBuildName('New Build')
+								}}
 								className='build-li'>
 								{newBuild ? NameForm(true) : newBuildLi}
 							</div>

@@ -52,7 +52,6 @@ export const ChampSelector = () => {
     }, [b?.selected?.champ])
 
     useEffect(() => {
-        console.log(c.selectedChamp)
         if (c.selectedChamp) return
         setChamp(null)
     }, [c.selectedChamp])

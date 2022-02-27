@@ -10,18 +10,6 @@ export const OneBuild = () => {
     const {auth: {token}} = useContext(context.authContext)
     const {selected, dispatch} = useContext(context.buildContext)
 
-    // useEffect(() => {
-    //     console.log('in onebuild')
-    //     console.log(selected)
-    // }, [selected])
-
-    // useEffect(() => {
-    //     if (!selected) return
-    //     console.log('setting tray:')
-    //     console.log(selected.items)
-    // }, [selected?.items])
-
-
     return (
 			<Tray>
 				{selected

@@ -10,30 +10,39 @@ const search = createFilter({ ignoreCase: true, matchFrom: 'start' })
 
 export const ItemSelector = () => {
 	const [item, setItem] = useState<ListItem>(null)
+    const [shouldPush, setShouldPush] = useState(false)
 	const b = useContext(ctx.buildContext)
 	const c = useContext(ctx.champContext)
 	const a = useContext(ctx.authContext)
 	const i = useContext(ctx.itemContext)
 
 	const addItem = async (val: ListItem) => {
-		setItem(null)
 		if (!b.selected) {
             toast('Create or select a build to add items')
+            setItem(null)
             return
         }
 		if (b.selected.items.length >= 6) {
             toast('Up to 6 items per build')
+            setItem(null)
             return
         }
-		b.dispatch({
-			type: Actions.PushItem,
-			item: i.items.find((i) => i.itemId === val.value)
-		})
-        if (a.auth.loggedIn) {
-            b.selected.save(a.auth.token)
-        }
+        setItem(val)
+        setShouldPush(true)
 		// if (auth.auth.loggedIn) await selectedBuild.save(auth.auth.token)
 	}
+
+    useEffect(() => {
+        if (!shouldPush) return
+        b.dispatch({
+			type: Actions.PushItem,
+			item: i.items.find((i) => i.itemId === item.value)
+		})
+        setShouldPush(false)
+        // if (a.auth.loggedIn) {
+        //     b.selected.save(a.auth.token)
+        // }
+    }, [shouldPush])
 
 	return (
 		<div className='selectors'>

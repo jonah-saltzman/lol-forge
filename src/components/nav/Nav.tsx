@@ -317,16 +317,22 @@ export const Nav = ({toggle}: NavProps) => {
 					<span className='mega'>LoL</span>Forge{' '}
 					<span className='subhead'>{'League of Legends Builds & Stats'}</span>
 				</Navbar.Brand>
-				{loggedIn ? (
-					<span onClick={() => setShow(true)} className='text-white text-large link'>
-						Account
-					</span>
-				) : (
-					<Button className='text-white text-large' onClick={() => setShow(true)}>
-						Login
-					</Button>
-				)}
-                {authModal}
+				<div className='login-account-btn'>
+					{loggedIn ? (
+						<span
+							onClick={() => setShow(true)}
+							className='text-white text-large link'>
+							Account
+						</span>
+					) : (
+						<Button
+							className='text-white text-large'
+							onClick={() => setShow(true)}>
+							Login
+						</Button>
+					)}
+					{authModal}
+				</div>
 			</Navbar>
 		)
 }

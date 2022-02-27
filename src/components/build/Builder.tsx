@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useContext} from "react";
 import { context } from '../../hooks';
-import { Spinner } from "../../components";
+import { ItemSelector, Spinner } from "../../components";
 import { Champ, Build, Item } from '../../classes'
 import { OneBuild, Slot, LiRender, ChampSelector } from "..";
 import { toast } from "react-toastify";
@@ -31,21 +31,10 @@ export const Builder = () => {
 	return (
 		<>
 			<Spinner center={true} show={loading} />
+            <span className="build-title">{selectedBuild ? selectedBuild.buildName ?? null : null}</span>
             <ChampSelector />
             <OneBuild />
-			<div className='selectors'>
-				{/* <Select
-					className='item-select'
-					blurInputOnSelect={false}
-					value={item}
-					onChange={addItem}
-					closeMenuOnScroll={false}
-					formatOptionLabel={LiRender}
-					options={itemOptions}
-					filterOption={search}
-					placeholder={'Add an item'}
-				/> */}
-			</div>
+			<ItemSelector />
 		</>
 	)
 }

@@ -27,6 +27,7 @@ export class Build {
             this.items = build.items
             this.buildId = build.buildId
             this.saved = false
+            console.log('cloning')
             this.previousInfo = this.getBuildInfo()
             this.hash = this.currentHash()
             return
@@ -41,6 +42,8 @@ export class Build {
 					return itemC.addItemStats(item.itemId, item.stats)
 			  }) && ([] as Item[])
 		this.buildId = info.buildId
+        console.log('in constructor, before getinfo:', this.champ)
+        console.log(this)
         this.previousInfo = this.getBuildInfo()
 	}
 	public static async create(
@@ -125,6 +128,7 @@ export class Build {
 		return new Build(info, champC, itemC, champ)
 	}
     getBuildInfo(): BuildInfo {
+        console.log(this.items)
         const itemInfos: ItemInfo[] = this.items.map((item) => ({
             itemId: item.itemId,
             from: item.from.map((from) => from.itemId),

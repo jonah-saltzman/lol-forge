@@ -29,6 +29,10 @@ body {
     font-weight: 600;
 }
 
+.login-account-btn {
+    margin-right: 2vw;
+}
+
 .nav-right {
     margin-right: 2vw;
     font-size: 1.3rem
@@ -225,6 +229,8 @@ textarea:-moz-placeholder {
     font-size: 1.2rem;
     font-weight: 500;
     margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
 }
 
 .build-li:hover {
@@ -264,7 +270,7 @@ textarea:-moz-placeholder {
 
 .champ-select {
     width: 50%;
-    margin-top: 2rem;
+    margin-top: 1rem;
     width: 20rem;
     height: 2rem;
 }
@@ -312,4 +318,10 @@ textarea:-moz-placeholder {
     left: 10rem;
     top: 20rem;
     color: #3f5baa;
+}
+
+.build-title {
+    margin-top: 1rem;
+    font-size: 1.5em;
+    font-weight: 500;
 }

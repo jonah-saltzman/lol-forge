@@ -30,6 +30,7 @@ const App = () => {
     const champNames = () => champs.map(champ => champ.champName)
     const champIds = () => champs.map(champ => champ.champId)
     const addChampStats = (champ: number, stats: OneStat[]): Champ => {
+        if (!champs.length) return
         const newArr = [...champs]
         const i = newArr.findIndex((ele) => ele.champId === champ)
         const newChamp = newArr[i].addStats(stats)
@@ -38,6 +39,7 @@ const App = () => {
         return newChamp
     }
     const addItemStats = (item: number, stats: OneStat[]): Item => {
+        if (!items.length) return
         const newArr = [...items]
         const i = newArr.findIndex((ele) => ele.itemId === item)
         const newItem = newArr[i].addStats(stats)
@@ -63,6 +65,8 @@ const App = () => {
         if (!auth.loggedIn) return
         setLoading(true)
         getAllBuilds(auth.token).then((infos) => {
+            console.log('all infos:')
+            console.log(infos)
             const newBuilds = infos.map(info => new Build(info, champC, itemC))
             setBuilds(newBuilds)
         }).then(() => {
@@ -85,13 +89,15 @@ const App = () => {
     useEffect(() => {
         if (!build) return
         const s = build.needSave()
-        console.log('need to save? ',s)
         if (!s || !auth.loggedIn) return
         build.save(auth.token).then(b => dispatch({type: Actions.Swap, build: b}))
     }, [build])
 
     useEffect(() => {
-        if (!build) return
+        if (!build) {
+            if (selectedChamp) setSelectedChamp(null)
+            return
+        }
         const listIndex = builds.findIndex(b => b.buildId === build.buildId)
         if (listIndex === -1) {
             console.error('build not in list')
@@ -121,6 +127,7 @@ const App = () => {
         if (!auth.loggedIn || !champs.length || !items.length || !loaded) {
             setBuilds([])
         } else {
+            console.log('hit else')
             refreshBuilds()
         }
     }, [loaded])
@@ -130,9 +137,7 @@ const App = () => {
             setBuilds([])
             setSelectedChamp(null)
             dispatch({type: Actions.Swap, build: null})
-        } else {
-            refreshBuilds()
-        }
+        } 
     }, [auth.loggedIn])
 
     useEffect(() => {
@@ -151,7 +156,7 @@ const App = () => {
 							<context.buildContext.Provider
 								value={{ selected: build, dispatch }}>
 								{auth.loggedIn ? (
-									<Col className='overflow-visible' xs={12} md={1}>
+									<Col className='overflow-visible' xs={12} md={3}>
 										<BuildList
 											authed={auth.loggedIn}
                                             loading={loading}
@@ -161,7 +166,7 @@ const App = () => {
 										/>
 									</Col>
 								) : null}
-								<Col className='main-col' xs={12} md={auth.loggedIn ? 11 : 12}>
+								<Col className='main-col' xs={12} md={auth.loggedIn ? 9 : 12}>
 									<Builder />
 								</Col>
 							</context.buildContext.Provider>
